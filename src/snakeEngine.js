@@ -14,7 +14,7 @@ export class SnakeEngine {
     this.target = { x: window.innerWidth * 0.6, y: window.innerHeight * 0.4 };
     
     this.angle = 0;
-    this.speed = 1.35; // Calm, slow, mysterious slithering speed
+    this.speed = 0.65; // Ultra-slow, calm, mysterious slithering speed
     this.wavePhase = 0;
     
     // AI State Machine ('SLITHERING' or 'RESTING')
@@ -208,7 +208,7 @@ export class SnakeEngine {
     }
 
     // Slithering Navigation Logic
-    this.wavePhase += 0.07;
+    this.wavePhase += 0.035;
 
     let destinationX = this.target.x;
     let destinationY = this.target.y;
@@ -240,12 +240,12 @@ export class SnakeEngine {
 
     const targetAngle = Math.atan2(dy, dx);
     
-    // Smooth, gentle turning radius
+    // Ultra-smooth, ultra-gentle turning radius
     let diff = targetAngle - this.angle;
     while (diff < -Math.PI) diff += Math.PI * 2;
     while (diff > Math.PI) diff -= Math.PI * 2;
 
-    this.angle += diff * 0.032;
+    this.angle += diff * 0.018;
 
     // Subtle Organic Serpentine Undulation
     const waveOffset = Math.sin(this.wavePhase) * 1.3;
