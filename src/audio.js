@@ -3,7 +3,7 @@ class SoundController {
   constructor() {
     this.ctx = null;
     this.isMuted = true;
-    this.bgAudio = new Audio('/audio/background_theme.mp3');
+    this.bgAudio = new Audio('audio/background_theme.mp3');
     this.bgAudio.loop = true;
     this.bgAudio.volume = 0.45;
   }
@@ -40,7 +40,7 @@ class SoundController {
       const gain = this.ctx.createGain();
 
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(587.33, this.ctx.currentTime); // D5
+      osc.frequency.setValueAtTime(587.33, this.ctx.currentTime);
       osc.frequency.exponentialRampToValueAtTime(1174.66, this.ctx.currentTime + 0.04);
 
       gain.gain.setValueAtTime(0.012, this.ctx.currentTime);

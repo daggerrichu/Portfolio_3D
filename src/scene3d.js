@@ -31,6 +31,7 @@ export class PortfolioScene3D {
     this.dirLight = null;
 
     this.gltfLoader = new GLTFLoader();
+    this.textureLoader = new THREE.TextureLoader();
 
     // Base Y-Rotations (Radians) to orient model front-facing
     this.modelYRotations = {
@@ -66,20 +67,17 @@ export class PortfolioScene3D {
     this.buildGoldenDarkHDRIEnvironment();
 
     // 5. Low-Key High-Contrast Golden Lighting
-    this.ambientLight = new THREE.AmbientLight(0x1a1408, 1.8); // Deep dark warm ambient
+    this.ambientLight = new THREE.AmbientLight(0x1a1408, 1.8);
     this.scene.add(this.ambientLight);
 
-    // High contrast sharp gold spotlight
     this.spotLight = new THREE.SpotLight(0xfbe395, 20, 40, Math.PI / 4, 0.4, 1);
     this.spotLight.position.set(2.0, 8, 6);
     this.scene.add(this.spotLight);
 
-    // Intense Gold Rim Light creating dramatic edge silhouette
     this.goldRimLight = new THREE.PointLight(0xd4af37, 14, 25);
     this.goldRimLight.position.set(-3.5, 3, -2);
     this.scene.add(this.goldRimLight);
 
-    // Warm Gold Ground Bounce Glow
     this.goldGlowLight = new THREE.PointLight(0x997a15, 10, 20);
     this.goldGlowLight.position.set(2.0, -1.8, 2);
     this.scene.add(this.goldGlowLight);
@@ -96,13 +94,9 @@ export class PortfolioScene3D {
     this.knightGroup.position.x = 2.0;
     this.knightGroup.visible = true;
     this.scene.add(this.knightGroup);
-    this.loadGLTFModel('/models/fallen_angel_demon_knight.glb', this.knightGroup, 'knight');
-
-    this.graviomGroup = new THREE.Group();
-    this.graviomGroup.position.x = 2.0;
-    this.graviomGroup.visible = false;
-    this.scene.add(this.graviomGroup);
-    this.loadGLTFModel('/models/graviom.glb', this.graviomGroup, 'graviom');
+    
+    // Relative path for subpath deployment compatibility
+    this.loadGLTFModel('models/fallen_angel_demon_knight.glb', this.knightGroup, 'knight');
 
     // 8. Slow Drifting Golden Dust Particles
     this.buildGoldenEmbers();
@@ -126,7 +120,6 @@ export class PortfolioScene3D {
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, 512, 256);
 
-    // High contrast gold softbox highlights
     ctx.fillStyle = '#fbe395';
     ctx.fillRect(90, 20, 110, 45);
 
@@ -154,7 +147,6 @@ export class PortfolioScene3D {
     this.darkFloor.position.y = -2.2;
     this.scene.add(this.darkFloor);
 
-    // Subtle Gold Wireframe Grid
     const grid = new THREE.GridHelper(60, 35, 0x997a15, 0x141006);
     grid.position.y = -2.18;
     this.scene.add(grid);
@@ -166,7 +158,6 @@ export class PortfolioScene3D {
       (gltf) => {
         const model = gltf.scene;
 
-        // Untampered 3D model loading
         const box = new THREE.Box3().setFromObject(model);
         const size = box.getSize(new THREE.Vector3());
         const maxDim = Math.max(size.x, size.y, size.z);
@@ -184,7 +175,7 @@ export class PortfolioScene3D {
 
         targetGroup.clear();
         targetGroup.add(pivot);
-        console.log(`Model ${url} loaded into Golden Dark Vibe theme!`);
+        console.log(`Model ${url} loaded successfully!`);
       },
       undefined,
       (err) => console.error(`Error loading GLTF model ${url}:`, err)
@@ -192,7 +183,7 @@ export class PortfolioScene3D {
   }
 
   getActiveGroup() {
-    return this.activeMode === 'graviom' ? this.graviomGroup : this.knightGroup;
+    return this.knightGroup;
   }
 
   buildGoldenEmbers() {

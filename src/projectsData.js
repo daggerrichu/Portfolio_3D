@@ -57,7 +57,7 @@ export const projectsData = [
     category: "UI/UX Design & Web Platform",
     tagline: "Comprehensive healthcare & talent acquisition platform designed for seamless user experience.",
     description: "Designed end-to-end user interfaces, navigation flows, and patient/talent management dashboards for Talentshealth.com.",
-    image: "/images/project1.png",
+    image: "images/project1.png",
     tags: ["Figma", "UI/UX", "Web Design", "Adobe XD"],
     demoUrl: "https://talentshealth.com",
     githubUrl: "https://github.com/lipinkumar"
@@ -68,7 +68,7 @@ export const projectsData = [
     category: "Enterprise Web & Product Design",
     tagline: "Corporate website & SaaS product design for Ionaught Technologies.",
     description: "Architected the corporate digital identity, landing pages, and web application UI components for Ionaught Technologies Pvt Ltd.",
-    image: "/images/project2.png",
+    image: "images/project2.png",
     tags: ["Figma", "Adobe XD", "CSS", "UI/UX"],
     demoUrl: "https://ionaught.com",
     githubUrl: "https://github.com/lipinkumar"
@@ -79,7 +79,7 @@ export const projectsData = [
     category: "Gamified Rank & Training UI",
     tagline: "Leaderboard rank interface and developer training module design.",
     description: "Created gamified leaderboard UI badges, training progress metrics, and interactive rank cards for developer skill assessment.",
-    image: "/images/project3.png",
+    image: "images/project3.png",
     tags: ["Figma", "Illustrator", "After Effects", "UI/UX"],
     demoUrl: "https://frontendwarfare.com",
     githubUrl: "https://github.com/lipinkumar"
@@ -90,7 +90,7 @@ export const projectsData = [
     category: "E-Commerce & Brand UI/UX",
     tagline: "Sleek commercial POS and retail portal design system.",
     description: "Delivered responsive web interfaces, product catalog layouts, and checkout experience for Actonposh.",
-    image: "/images/project1.png",
+    image: "images/project1.png",
     tags: ["Figma", "Photoshop", "Adobe XD", "UI/UX"],
     demoUrl: "https://actonposh.com",
     githubUrl: "https://github.com/lipinkumar"
@@ -101,7 +101,7 @@ export const projectsData = [
     category: "AI Tool UI/UX Design",
     tagline: "Interactive AI prompt engineering & design management interface.",
     description: "Designed a clean, minimalist UI for AI prompt generation, snippet organization, and workflow automation.",
-    image: "/images/project2.png",
+    image: "images/project2.png",
     tags: ["Figma", "Sketch", "UI/UX Design"],
     demoUrl: "https://lipinkumarcs20.editorx.io/lipinkumar",
     githubUrl: "https://github.com/lipinkumar"
@@ -112,7 +112,7 @@ export const projectsData = [
     category: "Mobile App UI/UX",
     tagline: "On-demand pharmacy delivery application for iOS & Android.",
     description: "Crafted user journeys, prescription upload UI, real-time courier tracking map, and order history screens.",
-    image: "/images/project3.png",
+    image: "images/project3.png",
     tags: ["Figma", "Android Studio", "InVision", "Mobile Design"],
     demoUrl: "https://lipinkumarcs20.editorx.io/lipinkumar",
     githubUrl: "https://github.com/lipinkumar"
@@ -123,7 +123,7 @@ export const projectsData = [
     category: "Enterprise Inventory Telemetry",
     tagline: "Real-time stock level monitoring and warehouse analytics dashboard.",
     description: "Designed inventory telemetry data visualizers, supply chain tracking tables, and automated alert panels.",
-    image: "/images/project1.png",
+    image: "images/project1.png",
     tags: ["Figma", "UI/UX", "Dashboard Design"],
     demoUrl: "https://lipinkumarcs20.editorx.io/lipinkumar",
     githubUrl: "https://github.com/lipinkumar"
@@ -134,7 +134,7 @@ export const projectsData = [
     category: "Product Management App",
     tagline: "A bespoke tool for managing software projects from scratch.",
     description: "Architected project roadmap views, kanban task boards, team collaboration widgets, and sprint tracking tools.",
-    image: "/images/project2.png",
+    image: "images/project2.png",
     tags: ["Figma", "Adobe XD", "Workflow Design"],
     demoUrl: "https://lipinkumarcs20.editorx.io/lipinkumar",
     githubUrl: "https://github.com/lipinkumar"
