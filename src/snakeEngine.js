@@ -1,4 +1,4 @@
-// Photorealistic Golden Fire Pit-Viper Engine — Slithering Website Companion
+// Photorealistic Slim & Calm Golden Fire Pit-Viper Engine — Slithering Website Companion
 export class SnakeEngine {
   constructor() {
     this.canvas = document.createElement('canvas');
@@ -6,7 +6,7 @@ export class SnakeEngine {
     this.ctx = this.canvas.getContext('2d');
     
     this.numSegments = 60; // 60 smooth articulated body segments
-    this.segmentLength = 8;
+    this.segmentLength = 6.5; // Slimmer, tighter joint spacing
     this.segments = [];
     
     // Initial Head & Target Coordinates
@@ -14,8 +14,13 @@ export class SnakeEngine {
     this.target = { x: window.innerWidth * 0.6, y: window.innerHeight * 0.4 };
     
     this.angle = 0;
-    this.speed = 3.6;
+    this.speed = 1.5; // Calm, slow, majestic slithering speed
     this.wavePhase = 0;
+    
+    // AI State Machine ('SLITHERING' or 'RESTING')
+    this.state = 'SLITHERING';
+    this.restTimer = 0;
+    this.isCardTarget = false;
     
     this.embers = [];
     this.mouse = { x: -1000, y: -1000, active: false };
@@ -65,31 +70,78 @@ export class SnakeEngine {
   }
 
   pickNewTarget() {
-    const margin = 100;
-    this.target.x = margin + Math.random() * (this.width - margin * 2);
-    this.target.y = margin + Math.random() * (this.height - margin * 2);
+    // 65% Chance to target the top border/edge of a visible website card!
+    const cards = document.querySelectorAll('.timeline-card, .project-card, .skill-card-simple, .language-card, .contact-container');
+    const visibleCards = Array.from(cards).filter(card => {
+      const r = card.getBoundingClientRect();
+      return r.top >= 0 && r.bottom <= window.innerHeight && r.width > 0;
+    });
+
+    if (visibleCards.length > 0 && Math.random() < 0.65) {
+      const card = visibleCards[Math.floor(Math.random() * visibleCards.length)];
+      const rect = card.getBoundingClientRect();
+      
+      // Target top surface of the card
+      this.target.x = rect.left + 25 + Math.random() * Math.max(20, rect.width - 50);
+      this.target.y = rect.top + 12 + Math.random() * 15;
+      this.isCardTarget = true;
+    } else {
+      // Random open space on screen
+      const margin = 80;
+      this.target.x = margin + Math.random() * (this.width - margin * 2);
+      this.target.y = margin + Math.random() * (this.height - margin * 2);
+      this.isCardTarget = false;
+    }
   }
 
-  // Realistic Anatomical Radius along snake body
+  // Slimmer & Elegant Anatomical Radius Function
   getSegmentRadius(index) {
-    if (index === 0) return 13; // Head snout
-    if (index === 1) return 16; // Broad pit-viper jaw
-    if (index === 2) return 12; // Neck narrowing
+    if (index === 0) return 7.5; // Slim head snout
+    if (index === 1) return 9.5; // Slim pit-viper jaw
+    if (index === 2) return 7.0; // Neck narrowing
 
     const t = index / this.numSegments; // 0.0 to 1.0
-    if (t < 0.6) {
-      // Muscular main body bulge
-      return 12 + Math.sin((t / 0.6) * Math.PI) * 4.5;
+    if (t < 0.65) {
+      // Sleek body bulge
+      return 7.0 + Math.sin((t / 0.65) * Math.PI) * 2.2; // Max thickness ~9.2px
     }
     // Smooth tapering tail
-    const tailProgress = (t - 0.6) / 0.4;
-    return Math.max(1.5, 14.5 * (1 - tailProgress));
+    const tailProgress = (t - 0.65) / 0.35;
+    return Math.max(1.0, 8.5 * (1 - tailProgress));
   }
 
   update() {
-    this.wavePhase += 0.12;
+    // Handling Resting AI State on Top of Cards
+    if (this.state === 'RESTING') {
+      this.restTimer--;
+      // Gentle breathing phase while resting on card
+      this.wavePhase += 0.035;
 
-    // Follow mouse when nearby, otherwise slither autonomously
+      // Spawn occasional resting embers
+      if (Math.random() < 0.15) {
+        const seg = this.segments[Math.floor(Math.random() * this.numSegments)];
+        this.embers.push({
+          x: seg.x + (Math.random() - 0.5) * 6,
+          y: seg.y + (Math.random() - 0.5) * 6,
+          vx: (Math.random() - 0.5) * 0.8,
+          vy: -Math.random() * 1.5 - 0.4,
+          radius: Math.random() * 1.8 + 0.6,
+          life: 1.0,
+          decay: 0.02 + Math.random() * 0.02
+        });
+      }
+
+      if (this.restTimer <= 0) {
+        // Wake up and continue slithering!
+        this.state = 'SLITHERING';
+        this.pickNewTarget();
+      }
+      return;
+    }
+
+    // Slithering Navigation Logic
+    this.wavePhase += 0.075; // Slower wave phase for calm motion
+
     let destinationX = this.target.x;
     let destinationY = this.target.y;
 
@@ -98,7 +150,7 @@ export class SnakeEngine {
       const dyMouse = this.mouse.y - this.head.y;
       const distMouse = Math.hypot(dxMouse, dyMouse);
 
-      if (distMouse < 360 && distMouse > 50) {
+      if (distMouse < 280 && distMouse > 50) {
         destinationX = this.mouse.x;
         destinationY = this.mouse.y;
       }
@@ -108,28 +160,34 @@ export class SnakeEngine {
     const dy = destinationY - this.head.y;
     const dist = Math.hypot(dx, dy);
 
-    if (dist < 60) {
-      this.pickNewTarget();
+    if (dist < 40) {
+      if (this.isCardTarget) {
+        // Reach top of card: Enter RESTING state for 6 to 10 seconds!
+        this.state = 'RESTING';
+        this.restTimer = 360 + Math.floor(Math.random() * 240); // ~6 to 10 seconds resting
+      } else {
+        this.pickNewTarget();
+      }
     }
 
     const targetAngle = Math.atan2(dy, dx);
     
-    // Smooth natural turning angle
+    // Calm, smooth turning radius
     let diff = targetAngle - this.angle;
     while (diff < -Math.PI) diff += Math.PI * 2;
     while (diff > Math.PI) diff -= Math.PI * 2;
 
-    this.angle += diff * 0.045;
+    this.angle += diff * 0.035;
 
     // Organic Serpentine Lateral Undulation
-    const waveOffset = Math.sin(this.wavePhase) * 1.6;
-    const currentAngle = this.angle + waveOffset * 0.14;
+    const waveOffset = Math.sin(this.wavePhase) * 1.4;
+    const currentAngle = this.angle + waveOffset * 0.12;
 
     this.head.x += Math.cos(currentAngle) * this.speed;
     this.head.y += Math.sin(currentAngle) * this.speed;
 
     // Boundary avoidance
-    const pad = 50;
+    const pad = 40;
     if (this.head.x < pad || this.head.x > this.width - pad || this.head.y < pad || this.head.y > this.height - pad) {
       this.angle += Math.PI * 0.4;
       this.pickNewTarget();
@@ -155,18 +213,18 @@ export class SnakeEngine {
       }
     }
 
-    // Spawn floating ember sparks trailing behind serpent
-    if (Math.random() < 0.4) {
+    // Spawn subtle floating ember sparks
+    if (Math.random() < 0.3) {
       const tailIndex = Math.floor(Math.random() * (this.numSegments - 8)) + 6;
       const tail = this.segments[tailIndex];
       this.embers.push({
-        x: tail.x + (Math.random() - 0.5) * 8,
-        y: tail.y + (Math.random() - 0.5) * 8,
-        vx: (Math.random() - 0.5) * 1.2,
-        vy: -Math.random() * 2 - 0.5,
-        radius: Math.random() * 2.2 + 0.8,
+        x: tail.x + (Math.random() - 0.5) * 6,
+        y: tail.y + (Math.random() - 0.5) * 6,
+        vx: (Math.random() - 0.5) * 1.0,
+        vy: -Math.random() * 1.8 - 0.4,
+        radius: Math.random() * 2.0 + 0.6,
         life: 1.0,
-        decay: 0.02 + Math.random() * 0.025
+        decay: 0.02 + Math.random() * 0.02
       });
     }
   }
@@ -178,63 +236,63 @@ export class SnakeEngine {
     this.ctx.translate(h.x, h.y);
     this.ctx.rotate(headAngle);
 
-    // 1. Triangular Pit-Viper Head Geometry
+    // 1. Slim Triangular Pit-Viper Head Geometry
     this.ctx.beginPath();
-    this.ctx.moveTo(18, 0); // Snout tip
-    this.ctx.bezierCurveTo(12, -12, -4, -16, -14, -8); // Left jaw
-    this.ctx.lineTo(-14, 8); // Neck base
-    this.ctx.bezierCurveTo(-4, 16, 12, 12, 18, 0); // Right jaw
+    this.ctx.moveTo(12, 0); // Snout tip
+    this.ctx.bezierCurveTo(8, -8, -2, -10, -9, -5); // Left jaw
+    this.ctx.lineTo(-9, 5); // Neck base
+    this.ctx.bezierCurveTo(-2, 10, 8, 8, 12, 0); // Right jaw
     this.ctx.closePath();
 
-    const headGrad = this.ctx.createLinearGradient(18, 0, -14, 0);
+    const headGrad = this.ctx.createLinearGradient(12, 0, -9, 0);
     headGrad.addColorStop(0, '#ffffff');
     headGrad.addColorStop(0.35, '#ffd700');
     headGrad.addColorStop(0.8, '#d48806');
     headGrad.addColorStop(1, '#804000');
 
     this.ctx.fillStyle = headGrad;
-    this.ctx.shadowColor = 'rgba(255, 180, 0, 0.95)';
-    this.ctx.shadowBlur = 18;
+    this.ctx.shadowColor = 'rgba(255, 180, 0, 0.85)';
+    this.ctx.shadowBlur = 12;
     this.ctx.fill();
 
     // 2. Flicking Forked Snake Tongue
-    const flickCycle = Math.sin(this.wavePhase * 0.7);
-    if (flickCycle > 0.3) {
-      const flickLen = (flickCycle - 0.3) * 18;
+    const flickCycle = Math.sin(this.wavePhase * 0.6);
+    if (flickCycle > 0.4) {
+      const flickLen = (flickCycle - 0.4) * 14;
       this.ctx.beginPath();
-      this.ctx.moveTo(18, 0);
-      this.ctx.lineTo(18 + flickLen, 0);
+      this.ctx.moveTo(12, 0);
+      this.ctx.lineTo(12 + flickLen, 0);
       // Forked tips
-      this.ctx.lineTo(18 + flickLen + 5, -4);
-      this.ctx.moveTo(18 + flickLen, 0);
-      this.ctx.lineTo(18 + flickLen + 5, 4);
+      this.ctx.lineTo(12 + flickLen + 4, -3);
+      this.ctx.moveTo(12 + flickLen, 0);
+      this.ctx.lineTo(12 + flickLen + 4, 3);
 
       this.ctx.strokeStyle = '#ff3333';
-      this.ctx.lineWidth = 1.8;
+      this.ctx.lineWidth = 1.4;
       this.ctx.shadowColor = '#ff0000';
-      this.ctx.shadowBlur = 6;
+      this.ctx.shadowBlur = 5;
       this.ctx.stroke();
     }
 
     // 3. Glowing Eyes with Vertical Slit Pupils
-    [-6.5, 6.5].forEach((sideY) => {
+    [-4.2, 4.2].forEach((sideY) => {
       // Outer Eye Glow Ring
       this.ctx.beginPath();
-      this.ctx.arc(5, sideY, 3.8, 0, Math.PI * 2);
+      this.ctx.arc(3.5, sideY, 2.6, 0, Math.PI * 2);
       this.ctx.fillStyle = '#ffcc00';
       this.ctx.shadowColor = '#ffd700';
-      this.ctx.shadowBlur = 10;
+      this.ctx.shadowBlur = 8;
       this.ctx.fill();
 
       // White Sclera
       this.ctx.beginPath();
-      this.ctx.arc(5, sideY, 2.5, 0, Math.PI * 2);
+      this.ctx.arc(3.5, sideY, 1.8, 0, Math.PI * 2);
       this.ctx.fillStyle = '#ffffff';
       this.ctx.fill();
 
       // Vertical Slit Pupil
       this.ctx.beginPath();
-      this.ctx.ellipse(5, sideY, 0.9, 2.4, 0, 0, Math.PI * 2);
+      this.ctx.ellipse(3.5, sideY, 0.6, 1.8, 0, 0, Math.PI * 2);
       this.ctx.fillStyle = '#050505';
       this.ctx.fill();
     });
@@ -260,11 +318,11 @@ export class SnakeEngine {
 
       this.ctx.beginPath();
       this.ctx.arc(e.x, e.y, e.radius, 0, Math.PI * 2);
-      this.ctx.fillStyle = `rgba(255, 215, 0, ${e.life * 0.85})`;
+      this.ctx.fillStyle = `rgba(255, 215, 0, ${e.life * 0.8})`;
       this.ctx.fill();
     }
 
-    // 2. Render Realistic Body Segments with 3D Drop Shadow & Scale Textures (Tail to Neck)
+    // 2. Render Slim Body Segments with 3D Drop Shadow & Scale Textures (Tail to Neck)
     for (let i = this.numSegments - 1; i >= 2; i--) {
       const seg = this.segments[i];
       const ratio = 1 - i / this.numSegments;
@@ -273,9 +331,9 @@ export class SnakeEngine {
       this.ctx.save();
 
       // 3D Elevation Drop Shadow over Webpage Cards
-      this.ctx.shadowColor = 'rgba(0, 0, 0, 0.55)';
-      this.ctx.shadowOffsetY = 5;
-      this.ctx.shadowBlur = 8;
+      this.ctx.shadowColor = 'rgba(0, 0, 0, 0.45)';
+      this.ctx.shadowOffsetY = 3.5;
+      this.ctx.shadowBlur = 6;
 
       this.ctx.beginPath();
       this.ctx.arc(seg.x, seg.y, radius, 0, Math.PI * 2);
@@ -298,9 +356,9 @@ export class SnakeEngine {
       this.ctx.fill();
 
       // Diamond Scale Pattern Overlay along Dorsal Ridge
-      if (i % 2 === 0 && radius > 4) {
+      if (i % 2 === 0 && radius > 3) {
         this.ctx.beginPath();
-        this.ctx.arc(seg.x, seg.y, radius * 0.45, 0, Math.PI * 2);
+        this.ctx.arc(seg.x, seg.y, radius * 0.4, 0, Math.PI * 2);
         this.ctx.fillStyle = `rgba(255, 245, 180, ${0.25 + ratio * 0.35})`;
         this.ctx.fill();
       }
