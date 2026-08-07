@@ -12,42 +12,50 @@ import { soundManager } from './audio.js';
 import { FireCursor } from './fireCursor.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-  // 0. Preloader Loading Screen Management
+  // 0. Golden Preloader — Smooth 3-Second Loading Animation
   const preloader = document.getElementById('preloader');
   const preloaderBar = document.getElementById('preloader-bar');
   const preloaderPercentage = document.getElementById('preloader-percentage');
   const preloaderStatus = document.getElementById('preloader-status');
 
-  let currentPercent = 0;
+  const DURATION_MS = 3000; // Exactly 3 seconds load time
+  const startTime = performance.now();
 
-  const updatePreloader = (percent, statusText) => {
-    currentPercent = Math.max(currentPercent, percent);
+  function animatePreloader(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(1.0, elapsed / DURATION_MS);
+    
+    // Eased percentage calculation
+    const currentPercent = Math.floor(progress * 100);
+
     if (preloaderBar) preloaderBar.style.width = `${currentPercent}%`;
     if (preloaderPercentage) preloaderPercentage.textContent = `${currentPercent}%`;
-    if (statusText && preloaderStatus) preloaderStatus.textContent = statusText;
 
-    if (currentPercent >= 100 && preloader) {
+    if (progress < 0.4) {
+      if (preloaderStatus) preloaderStatus.textContent = 'INITIALIZING 3D ENGINE & ASSETS...';
+    } else if (progress < 0.85) {
+      if (preloaderStatus) preloaderStatus.textContent = 'BUILDING SHADERS & LIGHTING...';
+    } else {
+      if (preloaderStatus) preloaderStatus.textContent = 'READY';
+    }
+
+    if (progress < 1.0) {
+      requestAnimationFrame(animatePreloader);
+    } else {
       setTimeout(() => {
-        preloader.classList.add('fade-out');
+        if (preloader) preloader.classList.add('fade-out');
       }, 300);
     }
-  };
+  }
 
-  // Fallback safety timer to hide preloader after 4.5 seconds maximum
-  setTimeout(() => {
-    updatePreloader(100, 'READY');
-  }, 4500);
+  requestAnimationFrame(animatePreloader);
 
   // 1. Initialize Lucide Icons
   createIcons({ icons });
 
-  // 2. Initialize 3D WebGL Engine with Real-Time Preloader Callbacks
+  // 2. Initialize 3D WebGL Engine
   const canvasContainer = document.getElementById('canvas-container');
-  const scene3d = new PortfolioScene3D(
-    canvasContainer,
-    (percent) => updatePreloader(percent, 'LOADING 3D ENGINE & ASSETS...'),
-    () => updatePreloader(100, 'READY')
-  );
+  const scene3d = new PortfolioScene3D(canvasContainer);
 
   // 3. Initialize Burning Fire & Ember Cursor Engine
   const fireCursor = new FireCursor();
