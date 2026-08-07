@@ -9,6 +9,7 @@ import {
 } from './projectsData.js';
 import { PortfolioScene3D } from './scene3d.js';
 import { soundManager } from './audio.js';
+import { WaterRippleCursor } from './waterCursor.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   // 1. Initialize Lucide Icons
@@ -18,7 +19,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const canvasContainer = document.getElementById('canvas-container');
   const scene3d = new PortfolioScene3D(canvasContainer);
 
-  // 3. Custom Glow Cursor Ring
+  // 3. Initialize Fluid Water Ripple Cursor Effect
+  const waterCursor = new WaterRippleCursor();
+
+  // 4. Custom Glow Cursor Ring
   const cursor = document.getElementById('cursor-follower');
   if (cursor) {
     window.addEventListener('mousemove', (e) => {
@@ -35,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 4. Mobile Hamburger Menu Toggle
+  // 5. Mobile Hamburger Menu Toggle
   const menuToggle = document.getElementById('menu-toggle');
   const navLinks = document.getElementById('nav-links');
   const menuIcon = document.getElementById('menu-icon');
@@ -66,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 5. Audio Control Toggle (Clean Lucide Icon Re-rendering)
+  // 6. Audio Control Toggle (Syncs both Desktop & Mobile Audio Buttons)
   const audioButtons = document.querySelectorAll('#audio-btn, #audio-btn-mobile');
 
   const updateAudioUI = (isUnmuted) => {
@@ -109,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 6. Render Work Experience List
+  // 7. Render Work Experience List
   const experienceList = document.getElementById('experience-list');
   if (experienceList) {
     experienceList.innerHTML = workExperience.map(exp => `
@@ -122,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
     `).join('');
   }
 
-  // 7. Render Real Projects Grid
+  // 8. Render Real Projects Grid
   const projectsGrid = document.getElementById('projects-grid');
   if (projectsGrid) {
     projectsGrid.innerHTML = projectsData.map(proj => `
@@ -149,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
     `).join('');
   }
 
-  // 8. Render Skills Grid
+  // 9. Render Skills Grid
   const skillsGrid = document.getElementById('skills-grid');
   if (skillsGrid) {
     skillsGrid.innerHTML = skillsList.map(skill => `
@@ -164,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
     `).join('');
   }
 
-  // 9. Render Languages List
+  // 10. Render Languages List
   const languageList = document.getElementById('language-list');
   if (languageList) {
     languageList.innerHTML = languagesList.map(lang => `
@@ -177,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   createIcons({ icons });
 
-  // 10. Project Modal Handling
+  // 11. Project Modal Handling
   const modal = document.getElementById('project-modal');
   const modalBody = document.getElementById('modal-body');
   const modalClose = document.getElementById('modal-close');
@@ -223,7 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 11. Scroll Progress & Active Nav Link Highlight
+  // 12. Scroll Progress & Active Nav Link Highlight
   window.addEventListener('scroll', () => {
     const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
     const progress = totalHeight > 0 ? window.scrollY / totalHeight : 0;
@@ -248,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 12. Contact Form Submission
+  // 13. Contact Form Submission
   const contactForm = document.getElementById('contact-form');
   if (contactForm) {
     contactForm.addEventListener('submit', (e) => {
