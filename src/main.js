@@ -12,12 +12,42 @@ import { soundManager } from './audio.js';
 import { FireCursor } from './fireCursor.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+  // 0. Preloader Loading Screen Management
+  const preloader = document.getElementById('preloader');
+  const preloaderBar = document.getElementById('preloader-bar');
+  const preloaderPercentage = document.getElementById('preloader-percentage');
+  const preloaderStatus = document.getElementById('preloader-status');
+
+  let currentPercent = 0;
+
+  const updatePreloader = (percent, statusText) => {
+    currentPercent = Math.max(currentPercent, percent);
+    if (preloaderBar) preloaderBar.style.width = `${currentPercent}%`;
+    if (preloaderPercentage) preloaderPercentage.textContent = `${currentPercent}%`;
+    if (statusText && preloaderStatus) preloaderStatus.textContent = statusText;
+
+    if (currentPercent >= 100 && preloader) {
+      setTimeout(() => {
+        preloader.classList.add('fade-out');
+      }, 300);
+    }
+  };
+
+  // Fallback safety timer to hide preloader after 4.5 seconds maximum
+  setTimeout(() => {
+    updatePreloader(100, 'READY');
+  }, 4500);
+
   // 1. Initialize Lucide Icons
   createIcons({ icons });
 
-  // 2. Initialize 3D WebGL Engine
+  // 2. Initialize 3D WebGL Engine with Real-Time Preloader Callbacks
   const canvasContainer = document.getElementById('canvas-container');
-  const scene3d = new PortfolioScene3D(canvasContainer);
+  const scene3d = new PortfolioScene3D(
+    canvasContainer,
+    (percent) => updatePreloader(percent, 'LOADING 3D ENGINE & ASSETS...'),
+    () => updatePreloader(100, 'READY')
+  );
 
   // 3. Initialize Burning Fire & Ember Cursor Engine
   const fireCursor = new FireCursor();

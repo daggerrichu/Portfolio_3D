@@ -2,11 +2,14 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 export class PortfolioScene3D {
-  constructor(canvasContainer) {
+  constructor(canvasContainer, onProgressCallback, onCompleteCallback) {
     this.container = canvasContainer;
+    this.onProgress = onProgressCallback;
+    this.onComplete = onCompleteCallback;
+
     this.mouse = { x: 0, y: 0, targetX: 0, targetY: 0 };
     this.scrollProgress = 0;
-    this.dustCount = window.innerWidth < 768 ? 600 : 1200; // Optimized particle count for mobile
+    this.dustCount = window.innerWidth < 768 ? 600 : 1200;
     this.activeMode = 'knight';
 
     // Three.js Core
@@ -44,7 +47,7 @@ export class PortfolioScene3D {
     this.scene = new THREE.Scene();
     this.scene.fog = new THREE.FogExp2(0x040507, 0.032);
 
-    // 2. Camera Setup - Responsive FOV
+    // 2. Camera Setup
     const width = window.innerWidth;
     const height = window.innerHeight;
     const fov = width < 768 ? 62 : 52;
@@ -87,7 +90,7 @@ export class PortfolioScene3D {
     // 6. Deep Dark Reflective Mirror Stage Floor Grid
     this.buildDarkStageFloor();
 
-    // 7. Centerpiece 3D Model Group - Responsive X Offset
+    // 7. Centerpiece 3D Model Group
     this.knightGroup = new THREE.Group();
     this.updateModelGroupPosition();
     this.knightGroup.visible = true;
@@ -183,9 +186,21 @@ export class PortfolioScene3D {
 
         targetGroup.clear();
         targetGroup.add(pivot);
+
+        if (this.onComplete) {
+          this.onComplete();
+        }
       },
-      undefined,
-      (err) => console.error(`Error loading GLTF model ${url}:`, err)
+      (xhr) => {
+        if (xhr.lengthComputable && this.onProgress) {
+          const percent = Math.min(100, Math.round((xhr.loaded / xhr.total) * 100));
+          this.onProgress(percent);
+        }
+      },
+      (err) => {
+        console.error(`Error loading GLTF model ${url}:`, err);
+        if (this.onComplete) this.onComplete();
+      }
     );
   }
 
