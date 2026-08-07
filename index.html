@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lipin Kumar — UI/UX Designer &amp; Game Developer</title>
+  <meta name="description" content="Official portfolio of Lipin Kumar, UI/UX Designer &amp; Game Developer.">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+  <!-- 3D WebGL Canvas Layer -->
+  <div id="canvas-container"></div>
+
+  <!-- Custom Glow Cursor Ring -->
+  <div class="cursor-follower" id="cursor-follower"></div>
+
+  <!-- CineShader Floating Shader Info Badge (Bottom Left) -->
+  <div class="shader-info-badge">
+    <div>
+      <div class="shader-badge-title">Golden Dark Vibe Theme</div>
+      <div class="shader-badge-meta">Lipin Kumar — UI/UX &amp; Game Developer</div>
+    </div>
+    <div class="fps-indicator">60 FPS</div>
+  </div>
+
+  <!-- Header Navigation -->
+  <header class="header-nav">
+    <a href="#hero" class="logo-monogram">
+      LIPIN KUMAR <span>UI/UX &amp; Game Dev</span>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="#hero" class="nav-link active">Home</a></li>
+        <li><a href="#experience" class="nav-link">Experience</a></li>
+        <li><a href="#projects" class="nav-link">Projects</a></li>
+        <li><a href="#skills" class="nav-link">Skills</a></li>
+        <li>
+          <button class="icon-btn" id="audio-btn" title="Toggle Sound Engine">
+            <i data-lucide="volume-x" id="audio-icon"></i> Audio Off
+          </button>
+        </li>
+        <li><a href="#contact" class="btn-contact-pill">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Main Content Scroll Container -->
+  <main>
+    <!-- HERO SECTION -->
+    <section id="hero" class="hero-section">
+      <div class="hero-content-left">
+        <p class="hero-subtitle">Portfolio &amp; Experience</p>
+        <h1 class="hero-title-gold">
+          LIPIN<br>
+          KUMAR
+        </h1>
+        <p class="hero-role">UI/UX Designer &amp; Game Developer</p>
+        <p class="hero-description">
+          To engineer new things and seek a better position in an organization as a developer. Game development and UI/UX design in a better technological organization develops career, skill, and achieves maximum impact.
+        </p>
+        <div class="cta-group">
+          <a href="#projects" class="btn-gold-action">
+            <i data-lucide="sparkles"></i> View Projects
+          </a>
+          <a href="#contact" class="btn-outline-gold">
+            Get In Touch
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPERIENCE SECTION -->
+    <section id="experience">
+      <div class="section-header">
+        <p class="section-subtitle">Career Journey</p>
+        <h2 class="section-title">Work Experience</h2>
+      </div>
+      <div class="timeline-single-col" id="experience-list">
+        <!-- Injected dynamically -->
+      </div>
+    </section>
+
+    <!-- PROJECTS SECTION -->
+    <section id="projects">
+      <div class="section-header">
+        <p class="section-subtitle">Portfolio</p>
+        <h2 class="section-title">Featured Projects</h2>
+      </div>
+      <div class="projects-grid" id="projects-grid">
+        <!-- Injected dynamically -->
+      </div>
+    </section>
+
+    <!-- SKILLS & LANGUAGES SECTION -->
+    <section id="skills">
+      <div class="section-header">
+        <p class="section-subtitle">Expertise</p>
+        <h2 class="section-title">Skills &amp; Languages</h2>
+      </div>
+      <div class="skills-container">
+        <div>
+          <h3 class="timeline-column-title" style="margin-bottom: 20px;">
+            <i data-lucide="cpu"></i> Design &amp; Game Dev Tools
+          </h3>
+          <div class="skills-cards-grid" id="skills-grid">
+            <!-- Injected dynamically -->
+          </div>
+        </div>
+
+        <div>
+          <h3 class="timeline-column-title" style="margin-bottom: 20px;">
+            <i data-lucide="languages"></i> Languages
+          </h3>
+          <div class="language-card">
+            <div class="language-list" id="language-list">
+              <!-- Injected dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT SECTION -->
+    <section id="contact">
+      <div class="section-header">
+        <p class="section-subtitle">Connect</p>
+        <h2 class="section-title">Contact Lipin Kumar</h2>
+      </div>
+      <div class="contact-container">
+        <div class="contact-meta-bar" style="grid-template-columns: 1fr 1fr;">
+          <div class="contact-meta-item">
+            <i data-lucide="mail"></i> lipinkumarcs20@gmail.com
+          </div>
+          <div class="contact-meta-item">
+            <i data-lucide="phone"></i> 9747144795
+          </div>
+        </div>
+
+        <form id="contact-form">
+          <div class="form-group">
+            <label class="form-label" for="contact-name">Your Name</label>
+            <input type="text" id="contact-name" class="form-input" placeholder="e.g. Sarah Jenkins" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="contact-email">Email Address</label>
+            <input type="email" id="contact-email" class="form-input" placeholder="e.g. sarah@company.com" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="contact-message">Message</label>
+            <textarea id="contact-message" class="form-textarea" rows="5" placeholder="Let's build something extraordinary..." required></textarea>
+          </div>
+          <button type="submit" class="btn-gold-action" style="width: 100%; justify-content: center;">
+            <i data-lucide="send"></i> Send Message
+          </button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- PROJECT PREVIEW MODAL -->
+  <div class="modal-backdrop" id="project-modal">
+    <div class="modal-content">
+      <button class="modal-close-btn" id="modal-close">&times;</button>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>&copy; 2026 Lipin Kumar. All rights reserved. UI/UX Designer &amp; Game Developer.</p>
+  </footer>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
