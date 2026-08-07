@@ -9,7 +9,7 @@ import {
 } from './projectsData.js';
 import { PortfolioScene3D } from './scene3d.js';
 import { soundManager } from './audio.js';
-import { WaterRippleCursor } from './waterCursor.js';
+import { FireCursor } from './fireCursor.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   // 1. Initialize Lucide Icons
@@ -19,8 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const canvasContainer = document.getElementById('canvas-container');
   const scene3d = new PortfolioScene3D(canvasContainer);
 
-  // 3. Initialize Fluid Water Ripple Cursor Effect
-  const waterCursor = new WaterRippleCursor();
+  // 3. Initialize Burning Fire & Ember Cursor Engine
+  const fireCursor = new FireCursor();
 
   // 4. Custom Glow Cursor Ring
   const cursor = document.getElementById('cursor-follower');
