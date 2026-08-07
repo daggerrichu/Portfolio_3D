@@ -379,13 +379,9 @@ export class PortfolioScene3D {
       activeGroup.position.y += (targetY - activeGroup.position.y) * 0.06;
       activeGroup.position.z += (targetZ - activeGroup.position.z) * 0.06;
 
-      // Base body stays still in forward flight stance without scroll rotations
-      activeGroup.rotation.x += (0.0 - activeGroup.rotation.x) * 0.06;
-      activeGroup.rotation.y += (0.0 - activeGroup.rotation.y) * 0.06;
-      activeGroup.rotation.z += (0.0 - activeGroup.rotation.z) * 0.06;
-
-      // Head-Only Mouse Look
+      // Mouse Look-At Tracking (Head & Upper Body follows cursor)
       if (this.headBone) {
+        // 1. Rigged bone tracking
         const baseRotY = this.initialHeadRotation ? this.initialHeadRotation.y : 0;
         const baseRotX = this.initialHeadRotation ? this.initialHeadRotation.x : 0;
 
@@ -394,6 +390,17 @@ export class PortfolioScene3D {
 
         this.headBone.rotation.y += (targetHeadRotY - this.headBone.rotation.y) * 0.08;
         this.headBone.rotation.x += (targetHeadRotX - this.headBone.rotation.x) * 0.08;
+
+        activeGroup.rotation.x += (0.0 - activeGroup.rotation.x) * 0.06;
+        activeGroup.rotation.y += (0.0 - activeGroup.rotation.y) * 0.06;
+      } else {
+        // 2. Unrigged model fallback: Turns head and stance smoothly toward mouse cursor
+        const targetRotY = this.mouse.x * 0.55;  // Turns left/right following cursor
+        const targetRotX = -this.mouse.y * 0.35; // Tilts up/down following cursor
+
+        activeGroup.rotation.y += (targetRotY - activeGroup.rotation.y) * 0.08;
+        activeGroup.rotation.x += (targetRotX - activeGroup.rotation.x) * 0.08;
+        activeGroup.rotation.z += (0.0 - activeGroup.rotation.z) * 0.06;
       }
     }
 
