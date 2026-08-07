@@ -38,7 +38,7 @@ export class SnakeEngine {
     this.canvas.style.width = '100vw';
     this.canvas.style.height = '100vh';
     this.canvas.style.pointerEvents = 'none';
-    this.canvas.style.zIndex = '9990';
+    this.canvas.style.zIndex = '1'; // Behind all main content & website cards
     document.body.appendChild(this.canvas);
 
     this.onResize();
