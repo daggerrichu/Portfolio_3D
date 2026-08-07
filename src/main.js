@@ -66,23 +66,27 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 5. Audio Control Toggle (Syncs both Desktop & Mobile Audio Buttons)
+  // 5. Audio Control Toggle (Clean Lucide Icon Re-rendering)
   const audioButtons = document.querySelectorAll('#audio-btn, #audio-btn-mobile');
 
   const updateAudioUI = (isUnmuted) => {
     audioButtons.forEach(btn => {
-      const icon = btn.querySelector('.audio-icon');
+      const iconBox = btn.querySelector('.audio-icon-box');
       const textEl = btn.querySelector('.audio-btn-text');
 
       if (isUnmuted) {
         btn.style.borderColor = 'var(--color-gold-bright)';
         btn.style.background = 'rgba(212, 175, 55, 0.25)';
-        if (icon) icon.setAttribute('data-lucide', 'volume-2');
+        if (iconBox) {
+          iconBox.innerHTML = `<i data-lucide="volume-2" class="audio-icon"></i>`;
+        }
         if (textEl) textEl.textContent = 'Audio On';
       } else {
         btn.style.borderColor = 'rgba(212, 175, 55, 0.25)';
         btn.style.background = 'rgba(255, 255, 255, 0.05)';
-        if (icon) icon.setAttribute('data-lucide', 'volume-x');
+        if (iconBox) {
+          iconBox.innerHTML = `<i data-lucide="volume-x" class="audio-icon"></i>`;
+        }
         if (textEl) textEl.textContent = 'Audio Off';
       }
     });
