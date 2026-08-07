@@ -10,6 +10,7 @@ import {
 import { PortfolioScene3D } from './scene3d.js';
 import { soundManager } from './audio.js';
 import { FireCursor } from './fireCursor.js';
+import { SnakeEngine } from './snakeEngine.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   // 0. Golden Preloader — Smooth 3-Second Loading Animation
@@ -59,6 +60,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 3. Initialize Burning Fire & Ember Cursor Engine
   const fireCursor = new FireCursor();
+
+  // 3b. Initialize Golden Fire Serpent Engine
+  const snakeEngine = new SnakeEngine();
 
   // 4. Custom Glow Cursor Ring
   const cursor = document.getElementById('cursor-follower');
