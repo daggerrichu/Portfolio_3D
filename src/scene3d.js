@@ -18,7 +18,6 @@ export class PortfolioScene3D {
     this.renderer = null;
     this.pmremGenerator = null;
     this.clock = new THREE.Clock();
-    this.mixer = null;
     this.wingUniforms = [];
 
     // Model Group
@@ -191,7 +190,7 @@ export class PortfolioScene3D {
         targetGroup.clear();
         targetGroup.add(pivot);
 
-        // Attach Real-Time Procedural Wing Flapping Shader to all Mesh materials
+        // Attach ONLY Real-Time Procedural Wing Flapping Shader to Mesh materials
         this.wingUniforms = [];
         model.traverse((child) => {
           if (child.isMesh && child.material) {
@@ -224,15 +223,6 @@ export class PortfolioScene3D {
             });
           }
         });
-
-        // Check for GLTF Embedded Skeletal Animations
-        if (gltf.animations && gltf.animations.length > 0) {
-          this.mixer = new THREE.AnimationMixer(model);
-          gltf.animations.forEach((clip) => {
-            const action = this.mixer.clipAction(clip);
-            action.play();
-          });
-        }
 
         if (this.onComplete) {
           this.onComplete();
@@ -324,132 +314,54 @@ export class PortfolioScene3D {
     this.updateModelGroupPosition();
   }
 
-  /**
-   * Sovereign Flight Path Scroll Keyframes for Winged Demon
-   * Continuous Wing Flapping active at all times; mouse head follow removed.
-   */
-  getScrollKeyframeTransform() {
-    const isMobile = window.innerWidth < 768;
-
-    const keyframes = [
-      // Hero (0.00): High Right Airborne Hover — Wings flapping, front view
-      { p: 0.00, posX: isMobile ? 0 : 1.8,  posY: isMobile ? 0.6 : 0.2,  posZ: 0.2, rotX: 0.0,   rotY: 0.0,            rotZ: 0.0,   scale: 1.05 },
-      // Experience (0.25): Gliding Flight Sweep to Left — Sleek flight banking angle
-      { p: 0.25, posX: isMobile ? 0 : -1.6, posY: isMobile ? 0.2 : -0.1, posZ: 0.5, rotX: 0.05,  rotY: Math.PI * 0.2,  rotZ: -0.08, scale: 1.1 },
-      // Projects (0.55): Heroic Ascension Right — Upper-right framing for project cards
-      { p: 0.55, posX: isMobile ? 0 : 1.7,  posY: isMobile ? 0.4 : 0.3,  posZ: 0.8, rotX: -0.05, rotY: -Math.PI * 0.25,rotZ: 0.04,  scale: 1.2 },
-      // Skills (0.80): Center Stage Spellcasting Hover — High elevated central flight
-      { p: 0.80, posX: 0.0,                 posY: isMobile ? 0.3 : 0.4,  posZ: 0.4, rotX: 0.1,   rotY: Math.PI * 0.15, rotZ: 0.0,   scale: 1.1 },
-      // Contact (1.00): Demon Sovereign Final Stance — Centered full wing-span front view
-      { p: 1.00, posX: 0.0,                 posY: isMobile ? 0.4 : 0.1,  posZ: 0.9, rotX: 0.0,   rotY: Math.PI * 2.0,  rotZ: 0.0,   scale: 1.3 }
-    ];
-
-    const p = Math.max(0, Math.min(1, this.scrollProgress));
-
-    let k1 = keyframes[0];
-    let k2 = keyframes[keyframes.length - 1];
-
-    for (let i = 0; i < keyframes.length - 1; i++) {
-      if (p >= keyframes[i].p && p <= keyframes[i + 1].p) {
-        k1 = keyframes[i];
-        k2 = keyframes[i + 1];
-        break;
-      }
-    }
-
-    const range = k2.p - k1.p;
-    const factor = range > 0 ? (p - k1.p) / range : 0;
-    
-    // Smooth Cubic Hermite curve easing
-    const easeFactor = factor * factor * (3 - 2 * factor);
-
-    return {
-      posX: k1.posX + (k2.posX - k1.posX) * easeFactor,
-      posY: k1.posY + (k2.posY - k1.posY) * easeFactor,
-      posZ: k1.posZ + (k2.posZ - k1.posZ) * easeFactor,
-      rotX: k1.rotX + (k2.rotX - k1.rotX) * easeFactor,
-      rotY: k1.rotY + (k2.rotY - k1.rotY) * easeFactor,
-      rotZ: k1.rotZ + (k2.rotZ - k1.rotZ) * easeFactor,
-      scale: k1.scale + (k2.scale - k1.scale) * easeFactor
-    };
-  }
-
   animate() {
     requestAnimationFrame(this.animate.bind(this));
 
-    const delta = this.clock.getDelta();
-    if (this.mixer) {
-      this.mixer.update(delta);
-    }
-
     const time = performance.now() * 0.0012;
 
-    // Update Real-time Wing Flapping Shader Uniforms
+    // Update Real-time Wing Flapping Shader Uniforms ONLY
     if (this.wingUniforms && this.wingUniforms.length > 0) {
       this.wingUniforms.forEach((u) => {
         if (u.uTime) u.uTime.value = time;
       });
     }
 
-    // Dynamic Pulsing Lighting
+    // Dynamic Pulsing Ambient Lighting
     if (this.goldGlowLight) {
-      this.goldGlowLight.intensity = 10 + Math.sin(time * 2.0) * 3 + this.scrollProgress * 6;
+      this.goldGlowLight.intensity = 10 + Math.sin(time * 2.0) * 3;
     }
     if (this.goldRimLight) {
-      this.goldRimLight.intensity = 14 + Math.sin(this.scrollProgress * Math.PI * 4) * 5;
+      this.goldRimLight.intensity = 14 + Math.sin(time * 3.0) * 4;
     }
 
-    // Scroll Transform Keyframe Target + Wing Flap Levitating Motion
-    const transform = this.getScrollKeyframeTransform();
-    const flightFloat = Math.sin(time * 1.6) * 0.14;
-
+    // Model Position & Rotation Stay Completely Still (ONLY Wing Flapping Running)
+    const isMobile = window.innerWidth < 768;
     const activeGroup = this.getActiveGroup();
     if (activeGroup) {
-      // Position Interpolation
-      const targetX = transform.posX;
-      const targetY = transform.posY + flightFloat;
-      const targetZ = transform.posZ;
+      const targetX = isMobile ? 0.0 : 1.8;
+      const targetY = isMobile ? 0.6 : 0.2;
+      const targetZ = 0.4;
 
-      activeGroup.position.x += (targetX - activeGroup.position.x) * 0.06;
-      activeGroup.position.y += (targetY - activeGroup.position.y) * 0.06;
-      activeGroup.position.z += (targetZ - activeGroup.position.z) * 0.06;
-
-      // Rotation Interpolation along Flight Path (Mouse follow removed)
-      activeGroup.rotation.x += (transform.rotX - activeGroup.rotation.x) * 0.06;
-      activeGroup.rotation.y += (transform.rotY - activeGroup.rotation.y) * 0.06;
-      activeGroup.rotation.z += (transform.rotZ - activeGroup.rotation.z) * 0.06;
+      activeGroup.position.set(targetX, targetY, targetZ);
+      activeGroup.rotation.set(0, 0, 0);
 
       if (this.knightPivot) {
         this.knightPivot.rotation.set(0, -Math.PI / 2, 0);
       }
-
-      // Scale Interpolation with Aerodynamic Wing Breathing
-      const currentScale = activeGroup.scale.x || 1.0;
-      const targetScale = transform.scale + Math.sin(time * 2.0) * 0.02;
-      const nextScale = currentScale + (targetScale - currentScale) * 0.06;
-      activeGroup.scale.set(nextScale, nextScale, nextScale);
     }
 
+    // Gentle Golden Ember Particles Floating
     if (this.goldenEmbers) {
       const positions = this.goldenEmbers.geometry.attributes.position.array;
-      const speedMultiplier = 1.0 + this.scrollProgress * 1.2;
-
       for (let i = 0; i < this.dustCount; i++) {
-        positions[i * 3 + 1] += 0.005 * speedMultiplier;
+        positions[i * 3 + 1] += 0.005;
         if (positions[i * 3 + 1] > 14) {
           positions[i * 3 + 1] = -12;
         }
       }
       this.goldenEmbers.geometry.attributes.position.needsUpdate = true;
-      this.goldenEmbers.rotation.y += 0.0002 + this.scrollProgress * 0.0006;
+      this.goldenEmbers.rotation.y += 0.0002;
     }
-
-    // Scroll Camera Dynamic Zoom & Smooth Tracking
-    const targetZ = (window.innerWidth < 768 ? 6.5 : 5.5) - this.scrollProgress * 2.0;
-    const targetY = -this.scrollProgress * 3.5;
-    this.camera.position.z += (targetZ - this.camera.position.z) * 0.05;
-    this.camera.position.y += (targetY - this.camera.position.y) * 0.05;
-    this.camera.lookAt(0, targetY, 0);
 
     this.renderer.render(this.scene, this.camera);
   }
