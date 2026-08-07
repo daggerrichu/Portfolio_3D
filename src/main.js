@@ -41,14 +41,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const menuIcon = document.getElementById('menu-icon');
 
   if (menuToggle && navLinks) {
-    menuToggle.addEventListener('click', () => {
+    const handleMenuToggle = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       soundManager.playClick();
       const isOpen = navLinks.classList.toggle('open');
       if (menuIcon) {
         menuIcon.setAttribute('data-lucide', isOpen ? 'x' : 'menu');
         createIcons({ icons });
       }
-    });
+    };
+
+    menuToggle.addEventListener('click', handleMenuToggle);
 
     // Close mobile menu when clicking any nav link
     document.querySelectorAll('.nav-link, .btn-contact-pill').forEach(link => {
@@ -62,23 +66,36 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 5. Audio Control Toggle (Standalone Mobile Icon + Desktop Button)
+  // 5. Audio Control Toggle (Optimized for Mobile Touch & Desktop Click)
   const audioBtn = document.getElementById('audio-btn');
   const audioIcon = document.getElementById('audio-icon');
 
   if (audioBtn) {
-    audioBtn.addEventListener('click', () => {
+    const handleAudioToggle = (e) => {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
       const isUnmuted = soundManager.toggleSound();
       if (isUnmuted) {
         audioBtn.style.borderColor = 'var(--color-gold-bright)';
+        audioBtn.style.background = 'rgba(212, 175, 55, 0.25)';
         if (audioIcon) audioIcon.setAttribute('data-lucide', 'volume-2');
-        audioBtn.querySelector('.audio-btn-text').textContent = 'Audio On';
+        const textEl = audioBtn.querySelector('.audio-btn-text');
+        if (textEl) textEl.textContent = 'Audio On';
       } else {
         audioBtn.style.borderColor = 'rgba(212, 175, 55, 0.25)';
+        audioBtn.style.background = 'rgba(255, 255, 255, 0.05)';
         if (audioIcon) audioIcon.setAttribute('data-lucide', 'volume-x');
-        audioBtn.querySelector('.audio-btn-text').textContent = 'Audio Off';
+        const textEl = audioBtn.querySelector('.audio-btn-text');
+        if (textEl) textEl.textContent = 'Audio Off';
       }
       createIcons({ icons });
+    };
+
+    audioBtn.addEventListener('click', handleAudioToggle);
+    audioBtn.addEventListener('touchend', (e) => {
+      handleAudioToggle(e);
     });
   }
 

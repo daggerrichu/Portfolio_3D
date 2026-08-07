@@ -26,7 +26,18 @@ class SoundController {
 
     if (!this.isMuted) {
       this.playClick();
-      this.bgAudio.play().catch(err => console.log('Audio autoplay prevented:', err));
+      
+      // Ensure audio plays directly within user gesture turn (Mobile Safari / Chrome unlock)
+      const playPromise = this.bgAudio.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          console.log('Mobile audio playback started successfully');
+        }).catch(err => {
+          console.log('Mobile audio play error:', err);
+          // Retry playback directly
+          this.bgAudio.play();
+        });
+      }
     } else {
       this.bgAudio.pause();
     }
