@@ -302,23 +302,23 @@ export class PortfolioScene3D {
   }
 
   /**
-   * Section Keyframe Interpolator mapped across overall scroll progress (0.0 -> 1.0)
-   * Hero (0.0) -> Experience (0.25) -> Projects (0.55) -> Skills (0.80) -> Contact (1.0)
+   * Concept 1: "Descend from the Abyss" Keyframes for Winged Demon Knight
+   * Hero (Airborne Hover) -> Experience (Heavy Floor Landing) -> Projects (Guardian Wing Shield) -> Skills (Ascension Vortex) -> Contact (Demon Sovereign Max Flare)
    */
   getScrollKeyframeTransform() {
     const isMobile = window.innerWidth < 768;
 
     const keyframes = [
-      // Hero: Center-Right facing forward
-      { p: 0.00, posX: isMobile ? 0 : 2.0,  posY: isMobile ? 0.6 : 0.0,  posZ: 0.0, rotX: 0.0,   rotY: 0.0,              rotZ: 0.0,   scale: 1.0 },
-      // Experience: Left side profile view
-      { p: 0.25, posX: isMobile ? 0 : -1.8, posY: isMobile ? 0.3 : -0.25,posZ: 0.4, rotX: 0.1,   rotY: Math.PI * 0.75,   rotZ: -0.05, scale: 1.05 },
-      // Projects: Right side, slightly zoomed preview
-      { p: 0.55, posX: isMobile ? 0 : 1.8,  posY: isMobile ? 0.5 : 0.2,  posZ: 0.7, rotX: -0.15, rotY: -Math.PI * 0.55, rotZ: 0.05,  scale: 1.15 },
-      // Skills: Centered dramatic angled stance
-      { p: 0.80, posX: 0.0,                 posY: isMobile ? 0.2 : -0.3, posZ: 0.2, rotX: 0.2,   rotY: Math.PI * 1.25,  rotZ: 0.0,   scale: 1.0 },
-      // Contact: Center stage 360 full stance
-      { p: 1.00, posX: 0.0,                 posY: isMobile ? 0.5 : 0.1,  posZ: 0.8, rotX: 0.0,   rotY: Math.PI * 2.0,   rotZ: 0.0,   scale: 1.1 }
+      // Hero (0.00): High Airborne Hover — Wings wide open, floating high in dark sky
+      { p: 0.00, posX: isMobile ? 0 : 1.6,  posY: isMobile ? 1.0 : 0.8,  posZ: 0.2, rotX: -0.12, rotY: -0.15,          rotZ: 0.0,   scale: 1.05 },
+      // Experience (0.25): Heavy Ground Descent — Descends near floor into aggressive kneeling stance
+      { p: 0.25, posX: isMobile ? 0 : -1.6, posY: isMobile ? 0.2 : -0.45,posZ: 0.6, rotX: 0.35,  rotY: Math.PI * 0.35, rotZ: -0.08, scale: 1.15 },
+      // Projects (0.55): Guardian Wing Shield Stance — Majestic stance with wings framing project cards
+      { p: 0.55, posX: isMobile ? 0 : 1.7,  posY: isMobile ? 0.4 : 0.1,  posZ: 0.9, rotX: -0.08, rotY: -Math.PI * 0.4, rotZ: 0.04,  scale: 1.25 },
+      // Skills (0.80): Ascension Vortex — Ascends into spellcasting hover with particle vortex
+      { p: 0.80, posX: 0.0,                 posY: isMobile ? 0.3 : 0.5,  posZ: 0.4, rotX: 0.22,  rotY: Math.PI * 1.1,  rotZ: 0.0,   scale: 1.1 },
+      // Contact (1.00): Demon Sovereign — Centered stage, maximum wing-span flare facing visitor
+      { p: 1.00, posX: 0.0,                 posY: isMobile ? 0.4 : 0.15, posZ: 1.0, rotX: 0.0,   rotY: Math.PI * 2.0,  rotZ: 0.0,   scale: 1.3 }
     ];
 
     const p = Math.max(0, Math.min(1, this.scrollProgress));
@@ -365,23 +365,23 @@ export class PortfolioScene3D {
 
     const time = performance.now() * 0.0012;
 
-    // Dynamic Pulsing Lighting
+    // Dynamic Pulsing Lighting & Wing Flare Lighting
     if (this.goldGlowLight) {
-      this.goldGlowLight.intensity = 10 + Math.sin(time * 2.0) * 3 + this.scrollProgress * 6;
+      this.goldGlowLight.intensity = 10 + Math.sin(time * 2.0) * 3 + this.scrollProgress * 8;
     }
     if (this.goldRimLight) {
-      this.goldRimLight.intensity = 12 + Math.sin(this.scrollProgress * Math.PI * 4) * 5;
+      this.goldRimLight.intensity = 14 + Math.sin(this.scrollProgress * Math.PI * 4) * 6;
     }
 
-    // Scroll Transform Keyframe Target
+    // Scroll Transform Keyframe Target + Wing Flap Levitating Motion
     const transform = this.getScrollKeyframeTransform();
-    const floatOffset = Math.sin(time * 1.5) * 0.12;
+    const wingFlapFloat = Math.sin(time * 1.8) * 0.16;
 
     const activeGroup = this.getActiveGroup();
     if (activeGroup) {
       // Position Interpolation
       const targetX = transform.posX;
-      const targetY = transform.posY + floatOffset;
+      const targetY = transform.posY + wingFlapFloat;
       const targetZ = transform.posZ;
 
       activeGroup.position.x += (targetX - activeGroup.position.x) * 0.06;
@@ -400,7 +400,7 @@ export class PortfolioScene3D {
         this.headBone.rotation.y += (targetHeadRotY - this.headBone.rotation.y) * 0.08;
         this.headBone.rotation.x += (targetHeadRotX - this.headBone.rotation.x) * 0.08;
 
-        // Body stays strictly on section keyframe rotation (no body wobble)
+        // Body stays strictly on section keyframe flight stance (no body wobble)
         activeGroup.rotation.x += (transform.rotX - activeGroup.rotation.x) * 0.06;
         activeGroup.rotation.y += (transform.rotY - activeGroup.rotation.y) * 0.06;
         activeGroup.rotation.z += (transform.rotZ - activeGroup.rotation.z) * 0.06;
@@ -414,22 +414,26 @@ export class PortfolioScene3D {
         activeGroup.rotation.z += (transform.rotZ - activeGroup.rotation.z) * 0.06;
       }
 
-      // Scale Interpolation
+      // Scale Interpolation with Subtle Wing Pulse
       const currentScale = activeGroup.scale.x || 1.0;
-      const nextScale = currentScale + (transform.scale - currentScale) * 0.06;
+      const targetScale = transform.scale + Math.sin(time * 2.2) * 0.02;
+      const nextScale = currentScale + (targetScale - currentScale) * 0.06;
       activeGroup.scale.set(nextScale, nextScale, nextScale);
     }
 
     if (this.goldenEmbers) {
       const positions = this.goldenEmbers.geometry.attributes.position.array;
+      // Ember speed accelerates during Ascension section (scrollProgress 0.7 - 0.9)
+      const speedMultiplier = 1.0 + (this.scrollProgress > 0.65 && this.scrollProgress < 0.9 ? 2.5 : 0);
+
       for (let i = 0; i < this.dustCount; i++) {
-        positions[i * 3 + 1] += 0.005;
+        positions[i * 3 + 1] += 0.005 * speedMultiplier;
         if (positions[i * 3 + 1] > 14) {
           positions[i * 3 + 1] = -12;
         }
       }
       this.goldenEmbers.geometry.attributes.position.needsUpdate = true;
-      this.goldenEmbers.rotation.y += 0.0002 + this.scrollProgress * 0.0005;
+      this.goldenEmbers.rotation.y += 0.0002 + this.scrollProgress * 0.0008;
     }
 
     // Scroll Camera Dynamic Zoom & Smooth Tracking
