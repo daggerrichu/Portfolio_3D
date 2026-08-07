@@ -35,7 +35,34 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 4. Audio Control Toggle
+  // 4. Mobile Hamburger Menu Toggle
+  const menuToggle = document.getElementById('menu-toggle');
+  const navLinks = document.getElementById('nav-links');
+  const menuIcon = document.getElementById('menu-icon');
+
+  if (menuToggle && navLinks) {
+    menuToggle.addEventListener('click', () => {
+      soundManager.playClick();
+      const isOpen = navLinks.classList.toggle('open');
+      if (menuIcon) {
+        menuIcon.setAttribute('data-lucide', isOpen ? 'x' : 'menu');
+        createIcons({ icons });
+      }
+    });
+
+    // Close mobile menu when clicking any nav link
+    document.querySelectorAll('.nav-link, .btn-contact-pill').forEach(link => {
+      link.addEventListener('click', () => {
+        navLinks.classList.remove('open');
+        if (menuIcon) {
+          menuIcon.setAttribute('data-lucide', 'menu');
+          createIcons({ icons });
+        }
+      });
+    });
+  }
+
+  // 5. Audio Control Toggle
   const audioBtn = document.getElementById('audio-btn');
   if (audioBtn) {
     audioBtn.addEventListener('click', () => {
@@ -51,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 5. Render Work Experience List
+  // 6. Render Work Experience List
   const experienceList = document.getElementById('experience-list');
   if (experienceList) {
     experienceList.innerHTML = workExperience.map(exp => `
@@ -64,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
     `).join('');
   }
 
-  // 6. Render Real Projects Grid
+  // 7. Render Real Projects Grid
   const projectsGrid = document.getElementById('projects-grid');
   if (projectsGrid) {
     projectsGrid.innerHTML = projectsData.map(proj => `
@@ -91,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
     `).join('');
   }
 
-  // 7. Render Skills Grid (Clean Skill Badge without percentages)
+  // 8. Render Skills Grid
   const skillsGrid = document.getElementById('skills-grid');
   if (skillsGrid) {
     skillsGrid.innerHTML = skillsList.map(skill => `
@@ -106,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
     `).join('');
   }
 
-  // 8. Render Languages List
+  // 9. Render Languages List
   const languageList = document.getElementById('language-list');
   if (languageList) {
     languageList.innerHTML = languagesList.map(lang => `
@@ -119,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   createIcons({ icons });
 
-  // 9. Project Modal Handling
+  // 10. Project Modal Handling
   const modal = document.getElementById('project-modal');
   const modalBody = document.getElementById('modal-body');
   const modalClose = document.getElementById('modal-close');
@@ -165,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 10. Scroll Progress & Active Nav Link Highlight
+  // 11. Scroll Progress & Active Nav Link Highlight
   window.addEventListener('scroll', () => {
     const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
     const progress = totalHeight > 0 ? window.scrollY / totalHeight : 0;
@@ -190,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 11. Contact Form Submission
+  // 12. Contact Form Submission
   const contactForm = document.getElementById('contact-form');
   if (contactForm) {
     contactForm.addEventListener('submit', (e) => {
