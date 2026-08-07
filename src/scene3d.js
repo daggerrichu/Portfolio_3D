@@ -186,6 +186,7 @@ export class PortfolioScene3D {
         const yRot = this.modelYRotations[modelKey] !== undefined ? this.modelYRotations[modelKey] : (-Math.PI / 2);
         pivot.rotation.y = yRot;
         pivot.add(model);
+        this.knightPivot = pivot;
 
         targetGroup.clear();
         targetGroup.add(pivot);
@@ -379,7 +380,7 @@ export class PortfolioScene3D {
       activeGroup.position.y += (targetY - activeGroup.position.y) * 0.06;
       activeGroup.position.z += (targetZ - activeGroup.position.z) * 0.06;
 
-      // Mouse Look-At Tracking (Head & Upper Body follows cursor)
+      // Mouse Look-At Tracking (Head & Face follows cursor)
       if (this.headBone) {
         // 1. Rigged bone tracking
         const baseRotY = this.initialHeadRotation ? this.initialHeadRotation.y : 0;
@@ -393,14 +394,18 @@ export class PortfolioScene3D {
 
         activeGroup.rotation.x += (0.0 - activeGroup.rotation.x) * 0.06;
         activeGroup.rotation.y += (0.0 - activeGroup.rotation.y) * 0.06;
-      } else {
-        // 2. Unrigged model fallback: Turns head and stance smoothly toward mouse cursor
-        const targetRotY = this.mouse.x * 0.55;  // Turns left/right following cursor
-        const targetRotX = -this.mouse.y * 0.35; // Tilts up/down following cursor
+      } else if (this.knightPivot) {
+        // 2. Unrigged model: Y-axis (Yaw) turns head left/right, Z-axis (Pitch) tilts head up/down
+        const baseRotY = -Math.PI / 2;
 
-        activeGroup.rotation.y += (targetRotY - activeGroup.rotation.y) * 0.08;
-        activeGroup.rotation.x += (targetRotX - activeGroup.rotation.x) * 0.08;
-        activeGroup.rotation.z += (0.0 - activeGroup.rotation.z) * 0.06;
+        const targetYaw = baseRotY + (this.mouse.x * 0.50);   // Head turns left/right following cursor
+        const targetPitch = (-this.mouse.y * 0.35);           // Head tilts up/down following cursor
+
+        this.knightPivot.rotation.y += (targetYaw - this.knightPivot.rotation.y) * 0.08;
+        this.knightPivot.rotation.z += (targetPitch - this.knightPivot.rotation.z) * 0.08;
+        this.knightPivot.rotation.x += (0.0 - this.knightPivot.rotation.x) * 0.08;
+
+        activeGroup.rotation.set(0, 0, 0);
       }
     }
 
