@@ -6,7 +6,7 @@ export class PortfolioScene3D {
     this.container = canvasContainer;
     this.mouse = { x: 0, y: 0, targetX: 0, targetY: 0 };
     this.scrollProgress = 0;
-    this.dustCount = 1200;
+    this.dustCount = window.innerWidth < 768 ? 600 : 1200; // Optimized particle count for mobile
     this.activeMode = 'knight';
 
     // Three.js Core
@@ -15,15 +15,14 @@ export class PortfolioScene3D {
     this.renderer = null;
     this.pmremGenerator = null;
     
-    // Model Groups
+    // Model Group
     this.knightGroup = null;
-    this.graviomGroup = null;
 
     // Golden Dark Theme Elements
     this.darkFloor = null;
     this.goldenEmbers = null;
 
-    // High-Contrast Low-Key Lighting
+    // Lighting
     this.ambientLight = null;
     this.spotLight = null;
     this.goldRimLight = null;
@@ -31,29 +30,28 @@ export class PortfolioScene3D {
     this.dirLight = null;
 
     this.gltfLoader = new GLTFLoader();
-    this.textureLoader = new THREE.TextureLoader();
 
-    // Base Y-Rotations (Radians) to orient model front-facing
+    // Base Y-Rotations
     this.modelYRotations = {
-      knight: -Math.PI / 2,   // Front facing orientation
-      graviom: 0
+      knight: -Math.PI / 2
     };
 
     this.init();
   }
 
   init() {
-    // 1. Scene Setup - Deep Pitch Black Dark Vibe Atmosphere
+    // 1. Scene Setup
     this.scene = new THREE.Scene();
     this.scene.fog = new THREE.FogExp2(0x040507, 0.032);
 
-    // 2. Camera Setup
+    // 2. Camera Setup - Responsive FOV
     const width = window.innerWidth;
     const height = window.innerHeight;
-    this.camera = new THREE.PerspectiveCamera(52, width / height, 0.1, 1000);
-    this.camera.position.set(0, 0.5, 5.5);
+    const fov = width < 768 ? 62 : 52;
+    this.camera = new THREE.PerspectiveCamera(fov, width / height, 0.1, 1000);
+    this.camera.position.set(0, 0.5, width < 768 ? 6.5 : 5.5);
 
-    // 3. Renderer Setup - High Contrast ACES Film Tone Mapping
+    // 3. Renderer Setup
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
     this.renderer.setSize(width, height);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -61,12 +59,12 @@ export class PortfolioScene3D {
     this.renderer.toneMappingExposure = 1.25;
     this.container.appendChild(this.renderer.domElement);
 
-    // 4. PMREM Generator for Golden Dark Environment Map
+    // 4. PMREM Generator for HDRI Reflections
     this.pmremGenerator = new THREE.PMREMGenerator(this.renderer);
     this.pmremGenerator.compileEquirectangularShader();
     this.buildGoldenDarkHDRIEnvironment();
 
-    // 5. Low-Key High-Contrast Golden Lighting
+    // 5. Lighting
     this.ambientLight = new THREE.AmbientLight(0x1a1408, 1.8);
     this.scene.add(this.ambientLight);
 
@@ -89,22 +87,30 @@ export class PortfolioScene3D {
     // 6. Deep Dark Reflective Mirror Stage Floor Grid
     this.buildDarkStageFloor();
 
-    // 7. Centerpiece 3D Model (Fallen Angel Knight) - Positioned on RIGHT (X = 2.0)
+    // 7. Centerpiece 3D Model Group - Responsive X Offset
     this.knightGroup = new THREE.Group();
-    this.knightGroup.position.x = 2.0;
+    this.updateModelGroupPosition();
     this.knightGroup.visible = true;
     this.scene.add(this.knightGroup);
     
-    // Relative path for subpath deployment compatibility
     this.loadGLTFModel('models/fallen_angel_demon_knight.glb', this.knightGroup, 'knight');
 
-    // 8. Slow Drifting Golden Dust Particles
+    // 8. Golden Dust Particles
     this.buildGoldenEmbers();
 
-    // 9. Event Listeners & Animation Loop
+    // 9. Event Listeners & Touch Controls
     window.addEventListener('resize', this.onResize.bind(this));
     window.addEventListener('mousemove', this.onMouseMove.bind(this));
+    window.addEventListener('touchmove', this.onTouchMove.bind(this), { passive: true });
+    
     this.animate();
+  }
+
+  updateModelGroupPosition() {
+    if (!this.knightGroup) return;
+    const isMobile = window.innerWidth < 768;
+    this.knightGroup.position.x = isMobile ? 0 : 2.0;
+    this.knightGroup.position.y = isMobile ? 0.8 : 0;
   }
 
   buildGoldenDarkHDRIEnvironment() {
@@ -161,7 +167,9 @@ export class PortfolioScene3D {
         const box = new THREE.Box3().setFromObject(model);
         const size = box.getSize(new THREE.Vector3());
         const maxDim = Math.max(size.x, size.y, size.z);
-        const scale = 4.4 / (maxDim || 1);
+        const isMobile = window.innerWidth < 768;
+        const targetScale = isMobile ? 3.2 : 4.4;
+        const scale = targetScale / (maxDim || 1);
         model.scale.set(scale, scale, scale);
 
         box.setFromObject(model);
@@ -175,7 +183,6 @@ export class PortfolioScene3D {
 
         targetGroup.clear();
         targetGroup.add(pivot);
-        console.log(`Model ${url} loaded successfully!`);
       },
       undefined,
       (err) => console.error(`Error loading GLTF model ${url}:`, err)
@@ -231,6 +238,13 @@ export class PortfolioScene3D {
     this.mouse.targetY = -(e.clientY / window.innerHeight) * 2 + 1;
   }
 
+  onTouchMove(e) {
+    if (e.touches && e.touches[0]) {
+      this.mouse.targetX = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
+      this.mouse.targetY = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
+    }
+  }
+
   setScrollProgress(progress) {
     this.scrollProgress = progress;
   }
@@ -238,9 +252,14 @@ export class PortfolioScene3D {
   onResize() {
     const width = window.innerWidth;
     const height = window.innerHeight;
+    
+    this.camera.fov = width < 768 ? 62 : 52;
     this.camera.aspect = width / height;
+    this.camera.position.z = width < 768 ? 6.5 : 5.5;
     this.camera.updateProjectionMatrix();
+    
     this.renderer.setSize(width, height);
+    this.updateModelGroupPosition();
   }
 
   animate() {
@@ -257,8 +276,9 @@ export class PortfolioScene3D {
 
     const activeGroup = this.getActiveGroup();
     if (activeGroup) {
-      activeGroup.position.y = Math.sin(time) * 0.14;
-      activeGroup.rotation.y = this.mouse.x * 0.25;
+      const baseY = window.innerWidth < 768 ? 0.8 : 0;
+      activeGroup.position.y = baseY + Math.sin(time) * 0.14;
+      activeGroup.rotation.y = this.mouse.x * 0.35;
       activeGroup.rotation.x = -this.mouse.y * 0.2;
     }
 
@@ -275,7 +295,7 @@ export class PortfolioScene3D {
     }
 
     // Scroll Camera Positioning
-    const targetZ = 5.5 - this.scrollProgress * 2.2;
+    const targetZ = (window.innerWidth < 768 ? 6.5 : 5.5) - this.scrollProgress * 2.2;
     const targetY = -this.scrollProgress * 3.8;
     this.camera.position.z += (targetZ - this.camera.position.z) * 0.05;
     this.camera.position.y += (targetY - this.camera.position.y) * 0.05;
