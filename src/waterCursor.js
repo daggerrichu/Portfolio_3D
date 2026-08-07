@@ -1,4 +1,4 @@
-// Calm Fluid Water Surface Engine with Mouse Repulsion & Floating Particles
+// Calm Heavy-Viscosity Water Surface Engine with Ultra-Slow Mouse Repulsion & Wave Ripples
 export class WaterRippleCursor {
   constructor() {
     this.canvas = document.createElement('canvas');
@@ -8,7 +8,7 @@ export class WaterRippleCursor {
     this.particles = [];
     this.ripples = [];
     
-    this.mouse = { x: -1000, y: -1000, radius: 140 };
+    this.mouse = { x: -1000, y: -1000, radius: 160 };
     this.particleCount = 130;
 
     this.init();
@@ -61,9 +61,8 @@ export class WaterRippleCursor {
         vy: 0,
         radius: Math.random() * 2.5 + 1.5,
         baseRadius: Math.random() * 2.5 + 1.5,
-        alpha: Math.random() * 0.5 + 0.35,
-        floatOffset: Math.random() * Math.PI * 2,
-        floatSpeed: 0.008 + Math.random() * 0.012
+        alpha: Math.random() * 0.45 + 0.3,
+        floatOffset: Math.random() * Math.PI * 2
       });
     }
   }
@@ -72,8 +71,8 @@ export class WaterRippleCursor {
     this.mouse.x = e.clientX;
     this.mouse.y = e.clientY;
 
-    if (Math.random() < 0.15) {
-      this.addRipple(e.clientX, e.clientY, 35, 0.4);
+    if (Math.random() < 0.08) {
+      this.addRipple(e.clientX, e.clientY, 40, 0.35);
     }
   }
 
@@ -81,14 +80,14 @@ export class WaterRippleCursor {
     if (e.touches && e.touches[0]) {
       this.mouse.x = e.touches[0].clientX;
       this.mouse.y = e.touches[0].clientY;
-      if (Math.random() < 0.2) {
-        this.addRipple(this.mouse.x, this.mouse.y, 35, 0.4);
+      if (Math.random() < 0.1) {
+        this.addRipple(this.mouse.x, this.mouse.y, 40, 0.35);
       }
     }
   }
 
   onMouseDown(e) {
-    this.addRipple(e.clientX, e.clientY, 70, 0.7);
+    this.addRipple(e.clientX, e.clientY, 60, 0.6);
   }
 
   addRipple(x, y, maxRadius, initialOpacity = 0.5) {
@@ -98,7 +97,7 @@ export class WaterRippleCursor {
       radius: 6,
       maxRadius: maxRadius,
       opacity: initialOpacity,
-      speed: 0.8 + Math.random() * 0.4 // Slow, calm wave expansion
+      speed: 0.3 + Math.random() * 0.15 // Ultra-slow wave expansion speed
     });
   }
 
@@ -106,13 +105,13 @@ export class WaterRippleCursor {
     requestAnimationFrame(this.animate.bind(this));
 
     this.ctx.clearRect(0, 0, this.width, this.height);
-    const time = performance.now() * 0.001;
+    const time = performance.now() * 0.0006; // Ultra-slow time scale
 
-    // 1. Update & Render Slow Calm Water Ripples
+    // 1. Update & Render Ultra-Slow Calm Water Ripples
     for (let i = this.ripples.length - 1; i >= 0; i--) {
       const r = this.ripples[i];
       r.radius += r.speed;
-      r.opacity *= 0.965; // Slow, calm fade
+      r.opacity *= 0.985; // Slow, lingering wave decay
 
       if (r.opacity <= 0.01 || r.radius >= r.maxRadius) {
         this.ripples.splice(i, 1);
@@ -125,24 +124,24 @@ export class WaterRippleCursor {
 
       const grad = this.ctx.createRadialGradient(r.x, r.y, Math.max(0, r.radius - 6), r.x, r.y, r.radius + 6);
       grad.addColorStop(0, `rgba(255, 227, 149, 0)`);
-      grad.addColorStop(0.5, `rgba(212, 175, 55, ${r.opacity * 0.5})`);
+      grad.addColorStop(0.5, `rgba(212, 175, 55, ${r.opacity * 0.45})`);
       grad.addColorStop(1, `rgba(153, 122, 21, 0)`);
 
       this.ctx.strokeStyle = grad;
-      this.ctx.lineWidth = 1.8;
+      this.ctx.lineWidth = 1.5;
       this.ctx.stroke();
       this.ctx.restore();
     }
 
-    // 2. Update & Render Particles Floating on Water with Mouse Repulsion
+    // 2. Update & Render Heavy Viscous Water Particles with Ultra-Slow Mouse Repulsion
     for (let i = 0; i < this.particles.length; i++) {
       const p = this.particles[i];
 
-      // Natural gentle bobbing on water
-      p.homeY += Math.sin(time * 1.2 + p.floatOffset) * 0.12;
-      p.homeX += Math.cos(time * 0.9 + p.floatOffset) * 0.08;
+      // Ultra-slow, gentle floating on water
+      p.homeY += Math.sin(time + p.floatOffset) * 0.04;
+      p.homeX += Math.cos(time * 0.8 + p.floatOffset) * 0.03;
 
-      // Mouse Repulsion Physics Calculation
+      // Mouse Repulsion Physics (Ultra-Gentle, Slow Push)
       const dx = p.x - this.mouse.x;
       const dy = p.y - this.mouse.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
@@ -150,37 +149,37 @@ export class WaterRippleCursor {
       if (dist < this.mouse.radius && dist > 0) {
         const force = (this.mouse.radius - dist) / this.mouse.radius;
         const pushAngle = Math.atan2(dy, dx);
-        const pushSpeed = force * 6.5; // Smooth displacement push away
+        const pushSpeed = force * 1.6; // Ultra-slow gentle push away
 
-        p.vx += Math.cos(pushAngle) * pushSpeed * 0.3;
-        p.vy += Math.sin(pushAngle) * pushSpeed * 0.3;
+        p.vx += Math.cos(pushAngle) * pushSpeed * 0.12;
+        p.vy += Math.sin(pushAngle) * pushSpeed * 0.12;
       }
 
-      // Smooth Return Physics (Restoring force back to home floating position)
+      // Smooth Gentle Restoring force back to home position
       const homeDx = p.homeX - p.x;
       const homeDy = p.homeY - p.y;
-      p.vx += homeDx * 0.03;
-      p.vy += homeDy * 0.03;
+      p.vx += homeDx * 0.008;
+      p.vy += homeDy * 0.008;
 
-      // Water Drag Friction (Dampening)
-      p.vx *= 0.91;
-      p.vy *= 0.91;
+      // Heavy Liquid Viscosity Friction
+      p.vx *= 0.86;
+      p.vy *= 0.86;
 
       p.x += p.vx;
       p.y += p.vy;
 
-      // Render Floating Liquid Drops with Soft Glow
+      // Render Floating Liquid Particles
       this.ctx.save();
       this.ctx.beginPath();
-      const currentRadius = p.baseRadius + Math.sin(time * 2 + p.floatOffset) * 0.4;
+      const currentRadius = p.baseRadius + Math.sin(time * 1.5 + p.floatOffset) * 0.3;
       this.ctx.arc(p.x, p.y, Math.max(0.5, currentRadius), 0, Math.PI * 2);
 
       const isPushed = dist < this.mouse.radius;
-      const glowAlpha = isPushed ? Math.min(1, p.alpha + 0.3) : p.alpha;
+      const glowAlpha = isPushed ? Math.min(1, p.alpha + 0.25) : p.alpha;
 
       this.ctx.fillStyle = `rgba(255, 227, 149, ${glowAlpha})`;
-      this.ctx.shadowColor = 'rgba(212, 175, 55, 0.6)';
-      this.ctx.shadowBlur = isPushed ? 12 : 6;
+      this.ctx.shadowColor = 'rgba(212, 175, 55, 0.5)';
+      this.ctx.shadowBlur = isPushed ? 10 : 5;
       this.ctx.fill();
       this.ctx.restore();
     }
