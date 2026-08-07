@@ -300,4 +300,14 @@ document.addEventListener('DOMContentLoaded', () => {
       contactForm.reset();
     });
   }
+
+  // 14. Fire Typing Sound Effect on Keystrokes
+  document.addEventListener('keydown', (e) => {
+    const tag = e.target ? e.target.tagName.toLowerCase() : '';
+    if (tag === 'input' || tag === 'textarea' || (e.target && e.target.isContentEditable)) {
+      if (!['Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'Tab'].includes(e.key)) {
+        soundManager.playFireTyping();
+      }
+    }
+  });
 });

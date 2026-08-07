@@ -85,6 +85,57 @@ class SoundController {
       osc.stop(this.ctx.currentTime + 0.08);
     } catch (e) {}
   }
+
+  playFireTyping() {
+    this.init();
+    if (this.isMuted || !this.ctx) return;
+    try {
+      const now = this.ctx.currentTime;
+
+      // 1. Fiery Crackle Noise Burst
+      const bufferSize = Math.floor(this.ctx.sampleRate * 0.04);
+      const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+      const output = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        output[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.35));
+      }
+
+      const noise = this.ctx.createBufferSource();
+      noise.buffer = buffer;
+
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(1800 + Math.random() * 1600, now);
+      filter.Q.setValueAtTime(2.5, now);
+
+      const noiseGain = this.ctx.createGain();
+      noiseGain.gain.setValueAtTime(0.09 + Math.random() * 0.05, now);
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+
+      noise.connect(filter);
+      filter.connect(noiseGain);
+      noiseGain.connect(this.ctx.destination);
+
+      noise.start(now);
+
+      // 2. Ember Sub Thud / Flame Snap
+      const osc = this.ctx.createOscillator();
+      const oscGain = this.ctx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(320 + Math.random() * 90, now);
+      osc.frequency.exponentialRampToValueAtTime(70, now + 0.045);
+
+      oscGain.gain.setValueAtTime(0.06, now);
+      oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
+
+      osc.connect(oscGain);
+      oscGain.connect(this.ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.045);
+    } catch (e) {}
+  }
 }
 
 export const soundManager = new SoundController();
