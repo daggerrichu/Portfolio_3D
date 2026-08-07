@@ -19,6 +19,7 @@ export class PortfolioScene3D {
     this.pmremGenerator = null;
     this.clock = new THREE.Clock();
     this.mixer = null;
+    this.wingUniforms = [];
 
     // Model Group
     this.knightGroup = null;
@@ -114,8 +115,8 @@ export class PortfolioScene3D {
   updateModelGroupPosition() {
     if (!this.knightGroup) return;
     const isMobile = window.innerWidth < 768;
-    this.knightGroup.position.x = isMobile ? 0 : 2.0;
-    this.knightGroup.position.y = isMobile ? 0.8 : 0;
+    this.knightGroup.position.x = isMobile ? 0 : 1.8;
+    this.knightGroup.position.y = isMobile ? 0.6 : 0.2;
   }
 
   buildGoldenDarkHDRIEnvironment() {
@@ -199,6 +200,40 @@ export class PortfolioScene3D {
               this.headBone = child;
               this.initialHeadRotation = child.rotation.clone();
             }
+          }
+        });
+
+        // Attach Real-Time Procedural Wing Flapping Shader to all Mesh materials
+        this.wingUniforms = [];
+        model.traverse((child) => {
+          if (child.isMesh && child.material) {
+            const materials = Array.isArray(child.material) ? child.material : [child.material];
+            materials.forEach((mat) => {
+              mat.onBeforeCompile = (shader) => {
+                shader.uniforms.uTime = { value: 0 };
+                this.wingUniforms.push(shader.uniforms);
+
+                shader.vertexShader = `
+                  uniform float uTime;
+                  ${shader.vertexShader}
+                `;
+
+                shader.vertexShader = shader.vertexShader.replace(
+                  '#include <begin_vertex>',
+                  `
+                  #include <begin_vertex>
+                  // Procedural Wing Flapping Vertex Shader (Flaps wing vertices |x| > 0.25)
+                  float wingDist = max(0.0, abs(transformed.x) - 0.25);
+                  if (wingDist > 0.0) {
+                    float flapCycle = sin(uTime * 4.5);
+                    transformed.z += flapCycle * 0.35 * wingDist;
+                    transformed.y += abs(flapCycle) * 0.18 * wingDist;
+                  }
+                  `
+                );
+              };
+              mat.needsUpdate = true;
+            });
           }
         });
 
@@ -301,56 +336,6 @@ export class PortfolioScene3D {
     this.updateModelGroupPosition();
   }
 
-  /**
-   * Concept 2: "Dynamic Wing Folding & Flight Pitch"
-   * Hero (Full Wing Span Hover) -> Experience (Sleek Wing Fold) -> Projects (Framing Wing Expansion) -> Skills (High Flight Streamlined Glide) -> Contact (Sovereign Wing Flare)
-   */
-  getScrollKeyframeTransform() {
-    const isMobile = window.innerWidth < 768;
-
-    const keyframes = [
-      // Hero (0.00): Full Wing Span Airborne Hover
-      { p: 0.00, posX: isMobile ? 0 : 1.8,  posY: isMobile ? 0.6 : 0.2,  posZ: 0.2, rotX: -0.05, rotY: 0.0,            rotZ: 0.0,   scale: 1.05 },
-      // Experience (0.25): Sleek Wing Fold — Tucked in gracefully to leave timeline clear
-      { p: 0.25, posX: isMobile ? 0 : -1.4, posY: isMobile ? 0.2 : 0.0,  posZ: 0.3, rotX: 0.05,  rotY: Math.PI * 0.25, rotZ: -0.04, scale: 0.95 },
-      // Projects (0.55): Framing Wing Expansion — Bursting wide to preview projects
-      { p: 0.55, posX: isMobile ? 0 : 1.6,  posY: isMobile ? 0.3 : 0.15, posZ: 0.8, rotX: -0.05, rotY: -Math.PI * 0.3, rotZ: 0.03,  scale: 1.25 },
-      // Skills (0.80): High Flight Streamlined Glide — Aerodynamic hovering glide stance
-      { p: 0.80, posX: 0.0,                 posY: isMobile ? 0.3 : 0.4,  posZ: 0.3, rotX: 0.15,  rotY: Math.PI * 0.1,  rotZ: 0.0,   scale: 1.05 },
-      // Contact (1.00): Sovereign Wing Flare — Sovereign facing front with max wing-span flare
-      { p: 1.00, posX: 0.0,                 posY: isMobile ? 0.4 : 0.1,  posZ: 0.9, rotX: 0.0,   rotY: Math.PI * 2.0,  rotZ: 0.0,   scale: 1.3 }
-    ];
-
-    const p = Math.max(0, Math.min(1, this.scrollProgress));
-
-    let k1 = keyframes[0];
-    let k2 = keyframes[keyframes.length - 1];
-
-    for (let i = 0; i < keyframes.length - 1; i++) {
-      if (p >= keyframes[i].p && p <= keyframes[i + 1].p) {
-        k1 = keyframes[i];
-        k2 = keyframes[i + 1];
-        break;
-      }
-    }
-
-    const range = k2.p - k1.p;
-    const factor = range > 0 ? (p - k1.p) / range : 0;
-    
-    // Smooth Cubic Hermite curve easing
-    const easeFactor = factor * factor * (3 - 2 * factor);
-
-    return {
-      posX: k1.posX + (k2.posX - k1.posX) * easeFactor,
-      posY: k1.posY + (k2.posY - k1.posY) * easeFactor,
-      posZ: k1.posZ + (k2.posZ - k1.posZ) * easeFactor,
-      rotX: k1.rotX + (k2.rotX - k1.rotX) * easeFactor,
-      rotY: k1.rotY + (k2.rotY - k1.rotY) * easeFactor,
-      rotZ: k1.rotZ + (k2.rotZ - k1.rotZ) * easeFactor,
-      scale: k1.scale + (k2.scale - k1.scale) * easeFactor
-    };
-  }
-
   animate() {
     requestAnimationFrame(this.animate.bind(this));
 
@@ -365,84 +350,67 @@ export class PortfolioScene3D {
 
     const time = performance.now() * 0.0012;
 
-    // Dynamic Pulsing Lighting & Wing Flare Lighting
-    if (this.goldGlowLight) {
-      this.goldGlowLight.intensity = 10 + Math.sin(time * 2.0) * 3 + this.scrollProgress * 8;
-    }
-    if (this.goldRimLight) {
-      this.goldRimLight.intensity = 14 + Math.sin(this.scrollProgress * Math.PI * 4) * 6;
+    // Update Real-time Wing Flapping Shader Uniforms
+    if (this.wingUniforms && this.wingUniforms.length > 0) {
+      this.wingUniforms.forEach((u) => {
+        if (u.uTime) u.uTime.value = time;
+      });
     }
 
-    // Scroll Transform Keyframe Target + Smooth Aerodynamic Flight Breathing
-    const transform = this.getScrollKeyframeTransform();
-    const flightFloat = Math.sin(time * 1.6) * 0.12;
+    // Dynamic Pulsing Lighting
+    if (this.goldGlowLight) {
+      this.goldGlowLight.intensity = 10 + Math.sin(time * 2.0) * 3;
+    }
+    if (this.goldRimLight) {
+      this.goldRimLight.intensity = 14 + Math.sin(time * 3.0) * 4;
+    }
+
+    // Fixed Majestic Airborne Hovering Position (No Scroll Keyframe Shifts)
+    const isMobile = window.innerWidth < 768;
+    const flightFloat = Math.sin(time * 1.6) * 0.14;
 
     const activeGroup = this.getActiveGroup();
     if (activeGroup) {
-      // Position Interpolation
-      const targetX = transform.posX;
-      const targetY = transform.posY + flightFloat;
-      const targetZ = transform.posZ;
+      const targetX = isMobile ? 0.0 : 1.8;
+      const targetY = (isMobile ? 0.6 : 0.2) + flightFloat;
+      const targetZ = 0.4;
 
       activeGroup.position.x += (targetX - activeGroup.position.x) * 0.06;
       activeGroup.position.y += (targetY - activeGroup.position.y) * 0.06;
       activeGroup.position.z += (targetZ - activeGroup.position.z) * 0.06;
 
-      // Head-Only vs Body Rotation Interpolation
+      // Base body stays still in forward flight stance without scroll rotations
+      activeGroup.rotation.x += (0.0 - activeGroup.rotation.x) * 0.06;
+      activeGroup.rotation.y += (0.0 - activeGroup.rotation.y) * 0.06;
+      activeGroup.rotation.z += (0.0 - activeGroup.rotation.z) * 0.06;
+
+      // Head-Only Mouse Look
       if (this.headBone) {
-        // 1. Rigged Character: Animate HEAD BONE ONLY towards mouse cursor
         const baseRotY = this.initialHeadRotation ? this.initialHeadRotation.y : 0;
         const baseRotX = this.initialHeadRotation ? this.initialHeadRotation.x : 0;
 
-        const targetHeadRotY = baseRotY + this.mouse.x * 0.7;  // Head turns left/right following cursor
-        const targetHeadRotX = baseRotX - this.mouse.y * 0.4;  // Head tilts up/down following cursor
+        const targetHeadRotY = baseRotY + this.mouse.x * 0.7;
+        const targetHeadRotX = baseRotX - this.mouse.y * 0.4;
 
         this.headBone.rotation.y += (targetHeadRotY - this.headBone.rotation.y) * 0.08;
         this.headBone.rotation.x += (targetHeadRotX - this.headBone.rotation.x) * 0.08;
-
-        // Body stays strictly on aerodynamic flight pitch (no body wobble)
-        activeGroup.rotation.x += (transform.rotX - activeGroup.rotation.x) * 0.06;
-        activeGroup.rotation.y += (transform.rotY - activeGroup.rotation.y) * 0.06;
-        activeGroup.rotation.z += (transform.rotZ - activeGroup.rotation.z) * 0.06;
-      } else {
-        // 2. Unrigged Mesh Fallback: Head-level upper turn tracking
-        const targetRotX = transform.rotX - this.mouse.y * 0.22;
-        const targetRotY = transform.rotY + this.mouse.x * 0.45;
-
-        activeGroup.rotation.x += (targetRotX - activeGroup.rotation.x) * 0.06;
-        activeGroup.rotation.y += (targetRotY - activeGroup.rotation.y) * 0.06;
-        activeGroup.rotation.z += (transform.rotZ - activeGroup.rotation.z) * 0.06;
       }
-
-      // Scale Interpolation with Aerodynamic Wing Breathing
-      const currentScale = activeGroup.scale.x || 1.0;
-      const targetScale = transform.scale + Math.sin(time * 2.0) * 0.02;
-      const nextScale = currentScale + (targetScale - currentScale) * 0.06;
-      activeGroup.scale.set(nextScale, nextScale, nextScale);
     }
 
     if (this.goldenEmbers) {
       const positions = this.goldenEmbers.geometry.attributes.position.array;
-      const speedMultiplier = 1.0 + (this.scrollProgress > 0.65 && this.scrollProgress < 0.9 ? 2.0 : 0);
-
       for (let i = 0; i < this.dustCount; i++) {
-        positions[i * 3 + 1] += 0.005 * speedMultiplier;
+        positions[i * 3 + 1] += 0.005;
         if (positions[i * 3 + 1] > 14) {
           positions[i * 3 + 1] = -12;
         }
       }
       this.goldenEmbers.geometry.attributes.position.needsUpdate = true;
-      this.goldenEmbers.rotation.y += 0.0002 + this.scrollProgress * 0.0006;
+      this.goldenEmbers.rotation.y += 0.0002;
     }
-
-    // Scroll Camera Dynamic Zoom & Smooth Tracking
-    const targetZ = (window.innerWidth < 768 ? 6.5 : 5.5) - this.scrollProgress * 2.2;
-    const targetY = -this.scrollProgress * 3.8;
-    this.camera.position.z += (targetZ - this.camera.position.z) * 0.05;
-    this.camera.position.y += (targetY - this.camera.position.y) * 0.05;
-    this.camera.lookAt(0, targetY, 0);
 
     this.renderer.render(this.scene, this.camera);
   }
 }
+
 
