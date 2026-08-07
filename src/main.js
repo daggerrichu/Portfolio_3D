@@ -301,12 +301,34 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 14. Fire Typing Sound Effect on Keystrokes
+  // Helper to calculate typing caret screen position
+  function getCaretScreenCoordinates(el) {
+    const rect = el.getBoundingClientRect();
+    const text = el.value || '';
+    const caretIndex = typeof el.selectionStart === 'number' ? el.selectionStart : text.length;
+
+    const font = window.getComputedStyle(el).font || '16px sans-serif';
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    ctx.font = font;
+    const textWidth = ctx.measureText(text.substring(0, caretIndex)).width;
+
+    const paddingLeft = parseFloat(window.getComputedStyle(el).paddingLeft) || 16;
+    const x = Math.min(rect.right - 12, Math.max(rect.left + 12, rect.left + paddingLeft + textWidth));
+    const y = rect.top + rect.height / 2;
+    return { x, y };
+  }
+
+  // 14. Fire Typing Sound Effect & Spark Bursts on Keystrokes
   document.addEventListener('keydown', (e) => {
     const tag = e.target ? e.target.tagName.toLowerCase() : '';
     if (tag === 'input' || tag === 'textarea' || (e.target && e.target.isContentEditable)) {
       if (!['Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'Tab'].includes(e.key)) {
         soundManager.playFireTyping();
+        const coords = getCaretScreenCoordinates(e.target);
+        if (fireCursor && typeof fireCursor.spawnTypingSparks === 'function') {
+          fireCursor.spawnTypingSparks(coords.x, coords.y);
+        }
       }
     }
   });

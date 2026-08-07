@@ -185,4 +185,31 @@ export class FireCursor {
 
     this.ctx.globalCompositeOperation = 'source-over';
   }
+
+  spawnTypingSparks(x, y) {
+    for (let i = 0; i < 6; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * 4 + 1.5;
+
+      this.flames.push({
+        x: x + (Math.random() - 0.5) * 8,
+        y: y + (Math.random() - 0.5) * 8,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 1.5,
+        radius: Math.random() * 8 + 5,
+        life: 1.0,
+        decay: 0.04 + Math.random() * 0.03
+      });
+
+      this.embers.push({
+        x: x + (Math.random() - 0.5) * 10,
+        y: y + (Math.random() - 0.5) * 10,
+        vx: (Math.random() - 0.5) * 3,
+        vy: -Math.random() * 4 - 2,
+        radius: Math.random() * 3.0 + 1.2,
+        life: 1.0,
+        decay: 0.02 + Math.random() * 0.02
+      });
+    }
+  }
 }
