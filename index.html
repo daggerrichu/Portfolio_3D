@@ -30,27 +30,32 @@
       LIPIN KUMAR <span>UI/UX &amp; Game Dev</span>
     </a>
 
-    <!-- Header Actions (Audio Icon + Hamburger Button) -->
-    <div class="header-actions-mobile">
-      <button class="icon-btn audio-btn-standalone" id="audio-btn" title="Toggle Sound Engine">
-        <i data-lucide="volume-x" id="audio-icon"></i>
-        <span class="audio-btn-text">Audio Off</span>
-      </button>
-
-      <button class="mobile-menu-toggle" id="menu-toggle" aria-label="Toggle Navigation Menu">
-        <i data-lucide="menu" id="menu-icon"></i>
-      </button>
-    </div>
-
     <nav>
       <ul class="nav-links" id="nav-links">
         <li><a href="#hero" class="nav-link active">Home</a></li>
         <li><a href="#experience" class="nav-link">Experience</a></li>
         <li><a href="#projects" class="nav-link">Projects</a></li>
         <li><a href="#skills" class="nav-link">Skills</a></li>
+        <li class="desktop-only-audio-item">
+          <button class="icon-btn audio-btn" id="audio-btn" title="Toggle Sound Engine">
+            <i data-lucide="volume-x" class="audio-icon"></i>
+            <span class="audio-btn-text">Audio Off</span>
+          </button>
+        </li>
         <li><a href="#contact" class="btn-contact-pill">Contact</a></li>
       </ul>
     </nav>
+
+    <!-- Mobile Header Actions (Standalone Audio Icon + Hamburger Toggle) -->
+    <div class="header-actions-mobile">
+      <button class="icon-btn audio-btn-standalone audio-btn-mobile" id="audio-btn-mobile" title="Toggle Sound Engine">
+        <i data-lucide="volume-x" class="audio-icon"></i>
+      </button>
+
+      <button class="mobile-menu-toggle" id="menu-toggle" aria-label="Toggle Navigation Menu">
+        <i data-lucide="menu" id="menu-icon"></i>
+      </button>
+    </div>
   </header>
 
   <!-- Main Content Scroll Container -->

@@ -134,12 +134,12 @@ body {
 }
 
 .header-actions-mobile {
-  display: flex;
+  display: none; /* Hidden on desktop by default */
   align-items: center;
   gap: 12px;
 }
 
-/* Hamburger Toggle Button (Hidden by default on Desktop) */
+/* Hamburger Toggle Button */
 .mobile-menu-toggle {
   display: none;
   background: rgba(255, 255, 255, 0.05);
@@ -687,9 +687,9 @@ footer {
   font-size: 0.85rem;
 }
 
-/* RESPONSIVE BREAKPOINTS & MOBILE-ONLY HEADER CUSTOMIZATIONS */
+/* RESPONSIVE BREAKPOINTS & MOBILE HEADER STYLING */
 @media (max-width: 768px) {
-  /* 1. Remove "Lipin Kumar UI/UX & Game Dev" text on mobile */
+  /* 1. Hide logo monogram text on mobile */
   .logo-monogram {
     display: none !important;
   }
@@ -699,8 +699,18 @@ footer {
     padding: 14px 16px;
   }
 
-  /* 2. Standalone Audio Button outside hamburger menu on mobile */
-  .icon-btn.audio-btn-standalone {
+  /* 2. Show mobile header actions (Standalone Audio Icon + Hamburger Toggle) */
+  .header-actions-mobile {
+    display: flex;
+  }
+
+  /* Hide Desktop Audio item inside nav links on mobile */
+  .desktop-only-audio-item {
+    display: none !important;
+  }
+
+  /* Standalone mobile audio icon button styling */
+  .audio-btn-standalone {
     width: 44px;
     height: 44px;
     padding: 0;
@@ -708,11 +718,6 @@ footer {
     justify-content: center;
     align-items: center;
     border-color: rgba(212, 175, 55, 0.3);
-  }
-
-  /* Hide "Audio Off" / "Audio On" text on mobile */
-  .audio-btn-text {
-    display: none !important;
   }
 
   .mobile-menu-toggle {

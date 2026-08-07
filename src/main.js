@@ -66,38 +66,44 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 5. Audio Control Toggle (Optimized for Mobile Touch & Desktop Click)
-  const audioBtn = document.getElementById('audio-btn');
-  const audioIcon = document.getElementById('audio-icon');
+  // 5. Audio Control Toggle (Syncs both Desktop & Mobile Audio Buttons)
+  const audioButtons = document.querySelectorAll('#audio-btn, #audio-btn-mobile');
 
-  if (audioBtn) {
+  const updateAudioUI = (isUnmuted) => {
+    audioButtons.forEach(btn => {
+      const icon = btn.querySelector('.audio-icon');
+      const textEl = btn.querySelector('.audio-btn-text');
+
+      if (isUnmuted) {
+        btn.style.borderColor = 'var(--color-gold-bright)';
+        btn.style.background = 'rgba(212, 175, 55, 0.25)';
+        if (icon) icon.setAttribute('data-lucide', 'volume-2');
+        if (textEl) textEl.textContent = 'Audio On';
+      } else {
+        btn.style.borderColor = 'rgba(212, 175, 55, 0.25)';
+        btn.style.background = 'rgba(255, 255, 255, 0.05)';
+        if (icon) icon.setAttribute('data-lucide', 'volume-x');
+        if (textEl) textEl.textContent = 'Audio Off';
+      }
+    });
+    createIcons({ icons });
+  };
+
+  audioButtons.forEach(btn => {
     const handleAudioToggle = (e) => {
       if (e) {
         e.preventDefault();
         e.stopPropagation();
       }
       const isUnmuted = soundManager.toggleSound();
-      if (isUnmuted) {
-        audioBtn.style.borderColor = 'var(--color-gold-bright)';
-        audioBtn.style.background = 'rgba(212, 175, 55, 0.25)';
-        if (audioIcon) audioIcon.setAttribute('data-lucide', 'volume-2');
-        const textEl = audioBtn.querySelector('.audio-btn-text');
-        if (textEl) textEl.textContent = 'Audio On';
-      } else {
-        audioBtn.style.borderColor = 'rgba(212, 175, 55, 0.25)';
-        audioBtn.style.background = 'rgba(255, 255, 255, 0.05)';
-        if (audioIcon) audioIcon.setAttribute('data-lucide', 'volume-x');
-        const textEl = audioBtn.querySelector('.audio-btn-text');
-        if (textEl) textEl.textContent = 'Audio Off';
-      }
-      createIcons({ icons });
+      updateAudioUI(isUnmuted);
     };
 
-    audioBtn.addEventListener('click', handleAudioToggle);
-    audioBtn.addEventListener('touchend', (e) => {
+    btn.addEventListener('click', handleAudioToggle);
+    btn.addEventListener('touchend', (e) => {
       handleAudioToggle(e);
     });
-  }
+  });
 
   // 6. Render Work Experience List
   const experienceList = document.getElementById('experience-list');
