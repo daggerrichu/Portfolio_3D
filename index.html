@@ -30,10 +30,17 @@
       LIPIN KUMAR <span>UI/UX &amp; Game Dev</span>
     </a>
 
-    <!-- Mobile Hamburger Toggle Button -->
-    <button class="mobile-menu-toggle" id="menu-toggle" aria-label="Toggle Navigation Menu">
-      <i data-lucide="menu" id="menu-icon"></i>
-    </button>
+    <!-- Header Actions (Audio Icon + Hamburger Button) -->
+    <div class="header-actions-mobile">
+      <button class="icon-btn audio-btn-standalone" id="audio-btn" title="Toggle Sound Engine">
+        <i data-lucide="volume-x" id="audio-icon"></i>
+        <span class="audio-btn-text">Audio Off</span>
+      </button>
+
+      <button class="mobile-menu-toggle" id="menu-toggle" aria-label="Toggle Navigation Menu">
+        <i data-lucide="menu" id="menu-icon"></i>
+      </button>
+    </div>
 
     <nav>
       <ul class="nav-links" id="nav-links">
@@ -41,11 +48,6 @@
         <li><a href="#experience" class="nav-link">Experience</a></li>
         <li><a href="#projects" class="nav-link">Projects</a></li>
         <li><a href="#skills" class="nav-link">Skills</a></li>
-        <li>
-          <button class="icon-btn" id="audio-btn" title="Toggle Sound Engine">
-            <i data-lucide="volume-x" id="audio-icon"></i> Audio Off
-          </button>
-        </li>
         <li><a href="#contact" class="btn-contact-pill">Contact</a></li>
       </ul>
     </nav>

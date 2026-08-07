@@ -62,17 +62,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 5. Audio Control Toggle
+  // 5. Audio Control Toggle (Standalone Mobile Icon + Desktop Button)
   const audioBtn = document.getElementById('audio-btn');
+  const audioIcon = document.getElementById('audio-icon');
+
   if (audioBtn) {
     audioBtn.addEventListener('click', () => {
       const isUnmuted = soundManager.toggleSound();
       if (isUnmuted) {
         audioBtn.style.borderColor = 'var(--color-gold-bright)';
-        audioBtn.innerHTML = `<i data-lucide="volume-2"></i> Audio On`;
+        if (audioIcon) audioIcon.setAttribute('data-lucide', 'volume-2');
+        audioBtn.querySelector('.audio-btn-text').textContent = 'Audio On';
       } else {
         audioBtn.style.borderColor = 'rgba(212, 175, 55, 0.25)';
-        audioBtn.innerHTML = `<i data-lucide="volume-x"></i> Audio Off`;
+        if (audioIcon) audioIcon.setAttribute('data-lucide', 'volume-x');
+        audioBtn.querySelector('.audio-btn-text').textContent = 'Audio Off';
       }
       createIcons({ icons });
     });
