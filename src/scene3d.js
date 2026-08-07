@@ -189,6 +189,19 @@ export class PortfolioScene3D {
         targetGroup.clear();
         targetGroup.add(pivot);
 
+        // Check for Head/Neck Bone for Head-Only Mouse Look-At Tracking
+        this.headBone = null;
+        this.initialHeadRotation = null;
+        model.traverse((child) => {
+          if (!this.headBone && child.name) {
+            const name = child.name.toLowerCase();
+            if (name.includes('head') || name.includes('neck') || name.includes('skull') || name.includes('face') || name.includes('helmet')) {
+              this.headBone = child;
+              this.initialHeadRotation = child.rotation.clone();
+            }
+          }
+        });
+
         // Check for GLTF Embedded Skeletal Animations
         if (gltf.animations && gltf.animations.length > 0) {
           this.mixer = new THREE.AnimationMixer(model);
@@ -375,14 +388,31 @@ export class PortfolioScene3D {
       activeGroup.position.y += (targetY - activeGroup.position.y) * 0.06;
       activeGroup.position.z += (targetZ - activeGroup.position.z) * 0.06;
 
-      // Rotation Interpolation + Mouse Parallax
-      const targetRotX = transform.rotX - this.mouse.y * 0.2;
-      const targetRotY = transform.rotY + this.mouse.x * 0.35;
-      const targetRotZ = transform.rotZ;
+      // Head-Only vs Body Rotation Interpolation
+      if (this.headBone) {
+        // 1. Rigged Character: Animate HEAD BONE ONLY towards mouse cursor
+        const baseRotY = this.initialHeadRotation ? this.initialHeadRotation.y : 0;
+        const baseRotX = this.initialHeadRotation ? this.initialHeadRotation.x : 0;
 
-      activeGroup.rotation.x += (targetRotX - activeGroup.rotation.x) * 0.06;
-      activeGroup.rotation.y += (targetRotY - activeGroup.rotation.y) * 0.06;
-      activeGroup.rotation.z += (targetRotZ - activeGroup.rotation.z) * 0.06;
+        const targetHeadRotY = baseRotY + this.mouse.x * 0.7;  // Head turns left/right following cursor
+        const targetHeadRotX = baseRotX - this.mouse.y * 0.4;  // Head tilts up/down following cursor
+
+        this.headBone.rotation.y += (targetHeadRotY - this.headBone.rotation.y) * 0.08;
+        this.headBone.rotation.x += (targetHeadRotX - this.headBone.rotation.x) * 0.08;
+
+        // Body stays strictly on section keyframe rotation (no body wobble)
+        activeGroup.rotation.x += (transform.rotX - activeGroup.rotation.x) * 0.06;
+        activeGroup.rotation.y += (transform.rotY - activeGroup.rotation.y) * 0.06;
+        activeGroup.rotation.z += (transform.rotZ - activeGroup.rotation.z) * 0.06;
+      } else {
+        // 2. Unrigged Mesh Fallback: Head-level upper turn tracking
+        const targetRotX = transform.rotX - this.mouse.y * 0.22;
+        const targetRotY = transform.rotY + this.mouse.x * 0.45;
+
+        activeGroup.rotation.x += (targetRotX - activeGroup.rotation.x) * 0.06;
+        activeGroup.rotation.y += (targetRotY - activeGroup.rotation.y) * 0.06;
+        activeGroup.rotation.z += (transform.rotZ - activeGroup.rotation.z) * 0.06;
+      }
 
       // Scale Interpolation
       const currentScale = activeGroup.scale.x || 1.0;
