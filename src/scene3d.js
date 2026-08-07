@@ -12,12 +12,14 @@ export class PortfolioScene3D {
     this.dustCount = window.innerWidth < 768 ? 600 : 1200;
     this.activeMode = 'knight';
 
-    // Three.js Core
+    // Three.js Core & Clock
     this.scene = null;
     this.camera = null;
     this.renderer = null;
     this.pmremGenerator = null;
-    
+    this.clock = new THREE.Clock();
+    this.mixer = null;
+
     // Model Group
     this.knightGroup = null;
 
@@ -187,6 +189,15 @@ export class PortfolioScene3D {
         targetGroup.clear();
         targetGroup.add(pivot);
 
+        // Check for GLTF Embedded Skeletal Animations
+        if (gltf.animations && gltf.animations.length > 0) {
+          this.mixer = new THREE.AnimationMixer(model);
+          gltf.animations.forEach((clip) => {
+            const action = this.mixer.clipAction(clip);
+            action.play();
+          });
+        }
+
         if (this.onComplete) {
           this.onComplete();
         }
@@ -277,24 +288,106 @@ export class PortfolioScene3D {
     this.updateModelGroupPosition();
   }
 
+  /**
+   * Section Keyframe Interpolator mapped across overall scroll progress (0.0 -> 1.0)
+   * Hero (0.0) -> Experience (0.25) -> Projects (0.55) -> Skills (0.80) -> Contact (1.0)
+   */
+  getScrollKeyframeTransform() {
+    const isMobile = window.innerWidth < 768;
+
+    const keyframes = [
+      // Hero: Center-Right facing forward
+      { p: 0.00, posX: isMobile ? 0 : 2.0,  posY: isMobile ? 0.6 : 0.0,  posZ: 0.0, rotX: 0.0,   rotY: 0.0,              rotZ: 0.0,   scale: 1.0 },
+      // Experience: Left side profile view
+      { p: 0.25, posX: isMobile ? 0 : -1.8, posY: isMobile ? 0.3 : -0.25,posZ: 0.4, rotX: 0.1,   rotY: Math.PI * 0.75,   rotZ: -0.05, scale: 1.05 },
+      // Projects: Right side, slightly zoomed preview
+      { p: 0.55, posX: isMobile ? 0 : 1.8,  posY: isMobile ? 0.5 : 0.2,  posZ: 0.7, rotX: -0.15, rotY: -Math.PI * 0.55, rotZ: 0.05,  scale: 1.15 },
+      // Skills: Centered dramatic angled stance
+      { p: 0.80, posX: 0.0,                 posY: isMobile ? 0.2 : -0.3, posZ: 0.2, rotX: 0.2,   rotY: Math.PI * 1.25,  rotZ: 0.0,   scale: 1.0 },
+      // Contact: Center stage 360 full stance
+      { p: 1.00, posX: 0.0,                 posY: isMobile ? 0.5 : 0.1,  posZ: 0.8, rotX: 0.0,   rotY: Math.PI * 2.0,   rotZ: 0.0,   scale: 1.1 }
+    ];
+
+    const p = Math.max(0, Math.min(1, this.scrollProgress));
+
+    let k1 = keyframes[0];
+    let k2 = keyframes[keyframes.length - 1];
+
+    for (let i = 0; i < keyframes.length - 1; i++) {
+      if (p >= keyframes[i].p && p <= keyframes[i + 1].p) {
+        k1 = keyframes[i];
+        k2 = keyframes[i + 1];
+        break;
+      }
+    }
+
+    const range = k2.p - k1.p;
+    const factor = range > 0 ? (p - k1.p) / range : 0;
+    
+    // Smooth Cubic Hermite curve easing
+    const easeFactor = factor * factor * (3 - 2 * factor);
+
+    return {
+      posX: k1.posX + (k2.posX - k1.posX) * easeFactor,
+      posY: k1.posY + (k2.posY - k1.posY) * easeFactor,
+      posZ: k1.posZ + (k2.posZ - k1.posZ) * easeFactor,
+      rotX: k1.rotX + (k2.rotX - k1.rotX) * easeFactor,
+      rotY: k1.rotY + (k2.rotY - k1.rotY) * easeFactor,
+      rotZ: k1.rotZ + (k2.rotZ - k1.rotZ) * easeFactor,
+      scale: k1.scale + (k2.scale - k1.scale) * easeFactor
+    };
+  }
+
   animate() {
     requestAnimationFrame(this.animate.bind(this));
 
+    const delta = this.clock.getDelta();
+    if (this.mixer) {
+      this.mixer.update(delta);
+    }
+
+    // Smooth Mouse tracking
     this.mouse.x += (this.mouse.targetX - this.mouse.x) * 0.05;
     this.mouse.y += (this.mouse.targetY - this.mouse.y) * 0.05;
 
     const time = performance.now() * 0.0012;
 
+    // Dynamic Pulsing Lighting
     if (this.goldGlowLight) {
-      this.goldGlowLight.intensity = 10 + Math.sin(time * 2.0) * 2;
+      this.goldGlowLight.intensity = 10 + Math.sin(time * 2.0) * 3 + this.scrollProgress * 6;
     }
+    if (this.goldRimLight) {
+      this.goldRimLight.intensity = 12 + Math.sin(this.scrollProgress * Math.PI * 4) * 5;
+    }
+
+    // Scroll Transform Keyframe Target
+    const transform = this.getScrollKeyframeTransform();
+    const floatOffset = Math.sin(time * 1.5) * 0.12;
 
     const activeGroup = this.getActiveGroup();
     if (activeGroup) {
-      const baseY = window.innerWidth < 768 ? 0.8 : 0;
-      activeGroup.position.y = baseY + Math.sin(time) * 0.14;
-      activeGroup.rotation.y = this.mouse.x * 0.35;
-      activeGroup.rotation.x = -this.mouse.y * 0.2;
+      // Position Interpolation
+      const targetX = transform.posX;
+      const targetY = transform.posY + floatOffset;
+      const targetZ = transform.posZ;
+
+      activeGroup.position.x += (targetX - activeGroup.position.x) * 0.06;
+      activeGroup.position.y += (targetY - activeGroup.position.y) * 0.06;
+      activeGroup.position.z += (targetZ - activeGroup.position.z) * 0.06;
+
+      // Rotation Interpolation + Mouse Parallax
+      const targetRotX = transform.rotX - this.mouse.y * 0.2;
+      const targetRotY = transform.rotY + this.mouse.x * 0.35;
+      const targetRotZ = transform.rotZ;
+
+      activeGroup.rotation.x += (targetRotX - activeGroup.rotation.x) * 0.06;
+      activeGroup.rotation.y += (targetRotY - activeGroup.rotation.y) * 0.06;
+      activeGroup.rotation.z += (targetRotZ - activeGroup.rotation.z) * 0.06;
+
+      // Scale Interpolation
+      const currentScale = activeGroup.scale.x || 1.0;
+      const nextScale = currentScale + (transform.scale - currentScale) * 0.06;
+      activeGroup.scale.set(nextScale, nextScale, nextScale);
     }
 
     if (this.goldenEmbers) {
@@ -306,10 +399,10 @@ export class PortfolioScene3D {
         }
       }
       this.goldenEmbers.geometry.attributes.position.needsUpdate = true;
-      this.goldenEmbers.rotation.y += 0.0002;
+      this.goldenEmbers.rotation.y += 0.0002 + this.scrollProgress * 0.0005;
     }
 
-    // Scroll Camera Positioning
+    // Scroll Camera Dynamic Zoom & Smooth Tracking
     const targetZ = (window.innerWidth < 768 ? 6.5 : 5.5) - this.scrollProgress * 2.2;
     const targetY = -this.scrollProgress * 3.8;
     this.camera.position.z += (targetZ - this.camera.position.z) * 0.05;
@@ -319,3 +412,4 @@ export class PortfolioScene3D {
     this.renderer.render(this.scene, this.camera);
   }
 }
+
