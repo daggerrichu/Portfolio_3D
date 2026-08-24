@@ -27,14 +27,16 @@ export class VirtualRoomScene {
     this.targetLookAt = this.defaultCamTarget.clone();
     this.currentLookAt = this.defaultCamTarget.clone();
 
-    // WebGL Renderer with Bright Daylight Exposure
+    // WebGL Renderer with Optimized Pixel Ratio Clamp
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
     this.renderer.setSize(this.width, this.height);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 2.6;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    this.isHighFpsMode = false;
 
     this.container.innerHTML = '';
     this.container.appendChild(this.renderer.domElement);
@@ -945,6 +947,11 @@ export class VirtualRoomScene {
     }
   }
 
+  toggleHighFpsMode() {
+    this.isHighFpsMode = !this.isHighFpsMode;
+    return this.isHighFpsMode;
+  }
+
   animate() {
     requestAnimationFrame(() => this.animate());
 
@@ -958,7 +965,7 @@ export class VirtualRoomScene {
       this.monitorLight.intensity = (this.isNight ? 2.8 : 1.2) + Math.sin(elapsedTime * 3) * 0.4;
     }
 
-    if (this.composer) {
+    if (this.composer && !this.isHighFpsMode) {
       this.composer.render();
     } else {
       this.renderer.render(this.scene, this.camera);

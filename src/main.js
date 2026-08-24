@@ -109,6 +109,20 @@ document.addEventListener('DOMContentLoaded', () => {
     daynightBtn.addEventListener('click', toggleDayNightMode);
   }
 
+  // Bind High FPS Mode Toggle Button
+  const fpsBtn = document.getElementById('btn-fps-mode');
+  const fpsText = document.getElementById('fps-mode-text');
+  if (fpsBtn) {
+    fpsBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (roomScene) {
+        const isHighFps = roomScene.toggleHighFpsMode();
+        if (fpsText) fpsText.textContent = isHighFps ? 'Glow Mode' : 'High FPS Mode';
+        fpsBtn.title = isHighFps ? 'Switch to Glow Bloom Mode' : 'Switch to High FPS Mode';
+      }
+    });
+  }
+
   // 1. Golden Preloader Timer
   const preloader = document.getElementById('preloader');
   const preloaderBar = document.getElementById('preloader-bar');
