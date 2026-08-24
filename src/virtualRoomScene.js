@@ -183,6 +183,11 @@ export class VirtualRoomScene {
     this.createLeftWallGalleryCanvas();
 
     this.scene.add(this.roomGroup);
+
+    // Pre-compile WebGL shaders & upload textures during loading screen
+    if (this.renderer && this.scene && this.camera) {
+      this.renderer.compile(this.scene, this.camera);
+    }
   }
 
   createWallPortfolioCanvas() {
@@ -323,6 +328,8 @@ export class VirtualRoomScene {
     ctx.fillText('⚡ Android Studio • After Effects • Premiere Pro • Three.js', 1210, 962);
 
     const texture = new THREE.CanvasTexture(canvas);
+    texture.generateMipmaps = false;
+    texture.minFilter = THREE.LinearFilter;
     texture.colorSpace = THREE.SRGBColorSpace;
 
     // Outer Wooden Frame (Enlarged to 11.7m x 8.0m)
@@ -469,6 +476,8 @@ export class VirtualRoomScene {
     ctx.fillText('Address: Vipin Bhavanam, Nettayam, Nediyara (P.O), 691306', 160, 1345);
 
     const leftTex = new THREE.CanvasTexture(canvas);
+    leftTex.generateMipmaps = false;
+    leftTex.minFilter = THREE.LinearFilter;
     leftTex.colorSpace = THREE.SRGBColorSpace;
 
     // Left Wall Outer Wooden Frame (Enlarged to 11.7m x 8.0m)
@@ -533,6 +542,8 @@ export class VirtualRoomScene {
     ctx.restore();
 
     const textTexture = new THREE.CanvasTexture(canvas);
+    textTexture.generateMipmaps = false;
+    textTexture.minFilter = THREE.LinearFilter;
     textTexture.colorSpace = THREE.SRGBColorSpace;
 
     const floorTextGeo = new THREE.PlaneGeometry(10.5, 3.9);
