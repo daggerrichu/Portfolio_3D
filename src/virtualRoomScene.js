@@ -27,16 +27,24 @@ export class VirtualRoomScene {
     this.targetLookAt = this.defaultCamTarget.clone();
     this.currentLookAt = this.defaultCamTarget.clone();
 
-    // WebGL Renderer with Optimized Pixel Ratio Clamp
-    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+    // WebGL Renderer with Brave Browser & Low-Spec Optimization
+    const isBrave = typeof navigator !== 'undefined' && navigator.brave && typeof navigator.brave.isBrave === 'function';
+    const targetPixelRatio = isBrave ? 1.0 : Math.min(window.devicePixelRatio, 1.25);
+
+    this.renderer = new THREE.WebGLRenderer({
+      antialias: !isBrave,
+      alpha: true,
+      powerPreference: "high-performance",
+      precision: "mediump"
+    });
     this.renderer.setSize(this.width, this.height);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
+    this.renderer.setPixelRatio(targetPixelRatio);
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 2.6;
     this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.renderer.shadowMap.type = isBrave ? THREE.BasicShadowMap : THREE.PCFSoftShadowMap;
 
-    this.isHighFpsMode = false;
+    this.isHighFpsMode = isBrave;
 
     this.container.innerHTML = '';
     this.container.appendChild(this.renderer.domElement);
@@ -77,8 +85,8 @@ export class VirtualRoomScene {
     this.windowLight = new THREE.DirectionalLight(0xfff0c4, 8.0);
     this.windowLight.position.set(16, 18, -12);
     this.windowLight.castShadow = true;
-    this.windowLight.shadow.mapSize.width = 2048;
-    this.windowLight.shadow.mapSize.height = 2048;
+    this.windowLight.shadow.mapSize.width = 1024;
+    this.windowLight.shadow.mapSize.height = 1024;
     this.windowLight.shadow.bias = -0.0001;
     this.scene.add(this.windowLight);
 
@@ -185,6 +193,8 @@ export class VirtualRoomScene {
     this.createLeftWallGalleryCanvas();
 
     this.scene.add(this.roomGroup);
+    this.roomGroup.matrixAutoUpdate = false;
+    this.roomGroup.updateMatrix();
 
     // Pre-compile WebGL shaders & upload textures during loading screen
     if (this.renderer && this.scene && this.camera) {
@@ -955,10 +965,12 @@ export class VirtualRoomScene {
   animate() {
     requestAnimationFrame(() => this.animate());
 
+    const delta = Math.min(this.clock.getDelta(), 0.1);
     const elapsedTime = this.clock.getElapsedTime();
+    const lerpFactor = 1.0 - Math.exp(-7.5 * delta);
 
-    this.camera.position.lerp(this.targetCameraPos, 0.06);
-    this.currentLookAt.lerp(this.targetLookAt, 0.06);
+    this.camera.position.lerp(this.targetCameraPos, lerpFactor);
+    this.currentLookAt.lerp(this.targetLookAt, lerpFactor);
     this.camera.lookAt(this.currentLookAt);
 
     if (this.monitorLight) {
