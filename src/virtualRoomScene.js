@@ -670,7 +670,7 @@ export class VirtualRoomScene {
   // --------------------------------------------------------------------------
   loadBlenderGLBModels() {
     // 1. Work Desk Table
-    this.gltfLoader.load('/models/work_desk.glb', (gltf) => {
+    this.gltfLoader.load('models/work_desk.glb', (gltf) => {
       const deskTable = gltf.scene;
       deskTable.position.set(0, 0, 0);
       deskTable.scale.set(0.03, 0.03, 0.03);
@@ -687,7 +687,7 @@ export class VirtualRoomScene {
     }, undefined, (err) => console.warn('[work_desk.glb] Error:', err));
 
     // 2. Xiaomi 4K Monitor (Centered on Desk)
-    this.gltfLoader.load('/models/xiaomi_4k_27_monitor.glb', (gltf) => {
+    this.gltfLoader.load('models/xiaomi_4k_27_monitor.glb', (gltf) => {
       const monitorObj = gltf.scene;
       monitorObj.position.set(0, 2.18, -0.15);
       monitorObj.scale.set(2.2, 2.2, 2.2);
@@ -710,7 +710,7 @@ export class VirtualRoomScene {
 
     // 3. Premium Textured Gaming Deskmat / Mousepad
     const texLoader = new THREE.TextureLoader();
-    texLoader.load('/textures/deskmat.jpg', (deskmatTex) => {
+    texLoader.load('textures/deskmat.jpg', (deskmatTex) => {
       deskmatTex.colorSpace = THREE.SRGBColorSpace;
       const deskmatGeo = new THREE.PlaneGeometry(1.8, 0.75);
       const deskmatMat = new THREE.MeshStandardMaterial({
@@ -728,19 +728,19 @@ export class VirtualRoomScene {
     });
 
     // 4. Mechanical Keyboard (Rotated 90 deg and placed 100% flush on deskmat at Y=1.605)
-    this.gltfLoader.load('/models/mechanical_keyboard.glb', (gltf) => {
+    this.gltfLoader.load('models/mechanical_keyboard.glb', (gltf) => {
       this.alignOnDesk(gltf.scene, -0.15, 0.20, 0.90, Math.PI / 2);
       console.log('[mechanical_keyboard.glb] Keyboard rotated & placed flush on deskmat!');
     }, undefined, (err) => console.warn('[mechanical_keyboard.glb] Error:', err));
 
     // 5. Computer Mouse (Rotated -90 deg to face monitor and placed 100% flush on deskmat at Y=1.605)
-    this.gltfLoader.load('/models/computer_mouse.glb', (gltf) => {
+    this.gltfLoader.load('models/computer_mouse.glb', (gltf) => {
       this.alignOnDesk(gltf.scene, 0.55, 0.20, 0.22, -Math.PI / 2);
       console.log('[computer_mouse.glb] Mouse rotated facing monitor and placed flush on deskmat!');
     }, undefined, (err) => console.warn('[computer_mouse.glb] Error:', err));
 
     // 6. PC Tower / CPU Rig (PC.fbx - Rotated 90 degrees on left side of monitor, base circle removed)
-    this.fbxLoader.load('/models/PC.fbx', (pcModel) => {
+    this.fbxLoader.load('models/PC.fbx', (pcModel) => {
       // Remove any black circle/cylinder base platform under the CPU
       pcModel.traverse((child) => {
         if (child.isMesh) {
@@ -766,14 +766,14 @@ export class VirtualRoomScene {
     }, undefined, (err) => console.warn('[PC.fbx] Error loading PC.fbx model:', err));
 
     // 7. Ergonomic Gaming Chair (Placed in front of workstation desk, resting flush on floor Y=0)
-    this.gltfLoader.load('/models/gaming_chair.glb', (gltf) => {
+    this.gltfLoader.load('models/gaming_chair.glb', (gltf) => {
       this.alignOnFloor(gltf.scene, 0, 1.55, 2.55, Math.PI);
       this.makeInteractive(gltf.scene, 'bookshelf', 'Ergonomic Gaming Chair', 'View Work Experience');
       console.log('[gaming_chair.glb] Gaming Chair loaded on room floor in front of workstation!');
     }, undefined, (err) => console.warn('[gaming_chair.glb] Error loading gaming chair:', err));
 
     // 8. Data Center Server Rack (Placed standing tall near the back wall on room floor Y=0)
-    this.gltfLoader.load('/models/data_center_rack.glb', (gltf) => {
+    this.gltfLoader.load('models/data_center_rack.glb', (gltf) => {
       this.alignOnFloor(gltf.scene, 3.8, -7.5, 4.2, 0);
       this.makeInteractive(gltf.scene, 'skills', 'Data Center Rack', 'View Technical Matrix');
       console.log('[data_center_rack.glb] Data Center Rack loaded near back wall on room floor!');
