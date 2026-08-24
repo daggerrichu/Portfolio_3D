@@ -1,10 +1,11 @@
 export const resumeData = {
   name: "Lipin Kumar",
-  title: "UI/UX Designer & Game Developer",
+  title: "UI UX Designer",
   email: "lipinkumarcs20@gmail.com",
-  phone: "9747144795",
+  phone: "9995921453",
+  address: "Vipin Bhavanam, Nettayam, Nediyara(P.O), 691306",
   portfolioUrl: "https://lipinkumarcs20.editorx.io/lipinkumar",
-  objective: "To engineer new things and seek a better position in an organization as a developer. Game development and UI/UX design in a better technological organization develops career, skill and gets better output for the organization."
+  objective: "To engineer new things and seek a better position in an organization as a developer. Software engineering in a better technological organization develops career, skill and gets better output for the organization."
 };
 
 export const workExperience = [
@@ -25,12 +26,12 @@ export const workExperience = [
 export const activitiesAndInternships = [
   {
     year: "2018",
-    title: "Android Application Development Summer Internship",
+    title: "Android Application Development Internship",
     organization: "Srishti Innovative Computer Systems (P) Ltd."
   },
   {
     year: "2018",
-    title: "Marketing Innovator Summer Internship",
+    title: "Marketing Innovator Internship",
     organization: "Areva Digital"
   },
   {
@@ -57,10 +58,9 @@ export const projectsData = [
     category: "UI/UX Design & Web Platform",
     tagline: "Comprehensive healthcare & talent acquisition platform designed for seamless user experience.",
     description: "Designed end-to-end user interfaces, navigation flows, and patient/talent management dashboards for Talentshealth.com.",
-    image: "images/project1.png",
+    image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800&q=80",
     tags: ["Figma", "UI/UX", "Web Design", "Adobe XD"],
-    demoUrl: "https://talentshealth.com",
-    githubUrl: "https://github.com/lipinkumar"
+    demoUrl: "https://talentshealth.com"
   },
   {
     id: "project-2",
@@ -68,10 +68,9 @@ export const projectsData = [
     category: "Enterprise Web & Product Design",
     tagline: "Corporate website & SaaS product design for Ionaught Technologies.",
     description: "Architected the corporate digital identity, landing pages, and web application UI components for Ionaught Technologies Pvt Ltd.",
-    image: "images/project2.png",
+    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80",
     tags: ["Figma", "Adobe XD", "CSS", "UI/UX"],
-    demoUrl: "https://ionaught.com",
-    githubUrl: "https://github.com/lipinkumar"
+    demoUrl: "https://ionaught.com"
   },
   {
     id: "project-3",
@@ -79,10 +78,9 @@ export const projectsData = [
     category: "Gamified Rank & Training UI",
     tagline: "Leaderboard rank interface and developer training module design.",
     description: "Created gamified leaderboard UI badges, training progress metrics, and interactive rank cards for developer skill assessment.",
-    image: "images/project3.png",
+    image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800&q=80",
     tags: ["Figma", "Illustrator", "After Effects", "UI/UX"],
-    demoUrl: "https://frontendwarfare.com",
-    githubUrl: "https://github.com/lipinkumar"
+    demoUrl: "https://frontendwarfare.com"
   },
   {
     id: "project-4",
@@ -90,10 +88,9 @@ export const projectsData = [
     category: "E-Commerce & Brand UI/UX",
     tagline: "Sleek commercial POS and retail portal design system.",
     description: "Delivered responsive web interfaces, product catalog layouts, and checkout experience for Actonposh.",
-    image: "images/project1.png",
+    image: "https://images.unsplash.com/photo-1556742049-0a674640c66d?auto=format&fit=crop&w=800&q=80",
     tags: ["Figma", "Photoshop", "Adobe XD", "UI/UX"],
-    demoUrl: "https://actonposh.com",
-    githubUrl: "https://github.com/lipinkumar"
+    demoUrl: "https://actonposh.com"
   },
   {
     id: "project-5",
@@ -101,10 +98,9 @@ export const projectsData = [
     category: "AI Tool UI/UX Design",
     tagline: "Interactive AI prompt engineering & design management interface.",
     description: "Designed a clean, minimalist UI for AI prompt generation, snippet organization, and workflow automation.",
-    image: "images/project2.png",
+    image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80",
     tags: ["Figma", "Sketch", "UI/UX Design"],
-    demoUrl: "https://lipinkumarcs20.editorx.io/lipinkumar",
-    githubUrl: "https://github.com/lipinkumar"
+    demoUrl: "https://lipinkumarcs20.editorx.io/lipinkumar"
   },
   {
     id: "project-6",
@@ -112,10 +108,9 @@ export const projectsData = [
     category: "Mobile App UI/UX",
     tagline: "On-demand pharmacy delivery application for iOS & Android.",
     description: "Crafted user journeys, prescription upload UI, real-time courier tracking map, and order history screens.",
-    image: "images/project3.png",
+    image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=800&q=80",
     tags: ["Figma", "Android Studio", "InVision", "Mobile Design"],
-    demoUrl: "https://lipinkumarcs20.editorx.io/lipinkumar",
-    githubUrl: "https://github.com/lipinkumar"
+    demoUrl: "https://lipinkumarcs20.editorx.io/lipinkumar"
   },
   {
     id: "project-7",
@@ -123,10 +118,9 @@ export const projectsData = [
     category: "Enterprise Inventory Telemetry",
     tagline: "Real-time stock level monitoring and warehouse analytics dashboard.",
     description: "Designed inventory telemetry data visualizers, supply chain tracking tables, and automated alert panels.",
-    image: "images/project1.png",
+    image: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80",
     tags: ["Figma", "UI/UX", "Dashboard Design"],
-    demoUrl: "https://lipinkumarcs20.editorx.io/lipinkumar",
-    githubUrl: "https://github.com/lipinkumar"
+    demoUrl: "https://lipinkumarcs20.editorx.io/lipinkumar"
   },
   {
     id: "project-8",
@@ -134,10 +128,9 @@ export const projectsData = [
     category: "Product Management App",
     tagline: "A bespoke tool for managing software projects from scratch.",
     description: "Architected project roadmap views, kanban task boards, team collaboration widgets, and sprint tracking tools.",
-    image: "images/project2.png",
+    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80",
     tags: ["Figma", "Adobe XD", "Workflow Design"],
-    demoUrl: "https://lipinkumarcs20.editorx.io/lipinkumar",
-    githubUrl: "https://github.com/lipinkumar"
+    demoUrl: "https://lipinkumarcs20.editorx.io/lipinkumar"
   }
 ];
 

@@ -1,4 +1,13 @@
+# Dependency & Build Output
 node_modules
 dist
+dist-ssr
+*.local
+
+# Editor & System Files
 .DS_Store
 *.log
+.env
+.cache
+.vscode
+.idea

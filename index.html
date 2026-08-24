@@ -3,11 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lipin Kumar — UI/UX Designer &amp; Game Developer</title>
-  <meta name="description" content="Official portfolio of Lipin Kumar, UI/UX Designer &amp; Game Developer.">
+  <title>Lipin Kumar — UI/UX Designer & Game Developer | 3D Interactive Virtual Room</title>
+  <meta name="description" content="Official 3D Interactive Portfolio of Lipin Kumar, UI/UX Designer & Game Developer where all content is embedded inside a 3D Virtual Office Room model.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Spline Viewer Web Component -->
+  <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.28/build/spline-viewer.js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
   <link rel="stylesheet" href="./style.css">
 </head>
-<body>
+<body class="day-mode spatial-portfolio-mode">
 
   <!-- Golden Dark Preloader Loading Screen -->
   <div class="preloader-overlay" id="preloader">
@@ -20,145 +32,141 @@
       </div>
 
       <div class="preloader-status-group">
-        <span class="preloader-status-text" id="preloader-status">INITIALIZING 3D ENGINE &amp; ASSETS...</span>
+        <span class="preloader-status-text" id="preloader-status">EMBEDDING PORTFOLIO CONTENT INTO 3D MODEL...</span>
         <span class="preloader-percentage" id="preloader-percentage">0%</span>
       </div>
     </div>
   </div>
 
-  <!-- 3D WebGL Canvas Layer -->
-  <div id="canvas-container"></div>
+  <!-- Fullscreen Interactive 3D Virtual Room Canvas Layer -->
+  <div id="virtual-room-container" class="fullscreen-3d-bg pointer-active"></div>
 
-  <!-- Custom Glow Cursor Ring -->
-  <div class="cursor-follower" id="cursor-follower"></div>
+  <!-- Interactive 3D Room Hover Annotation Tooltip -->
+  <div id="room-tooltip" class="room-tooltip hidden">
+    <span class="tooltip-title" id="tooltip-title">Workstation</span>
+    <span class="tooltip-action" id="tooltip-action">Click to View Projects</span>
+  </div>
 
-  <!-- Header Navigation -->
-  <header class="header-nav">
-    <a href="#hero" class="logo-monogram">
-      LIPIN KUMAR <span>UI/UX &amp; Game Dev</span>
-    </a>
+  <!-- Ambient Glow Background Orbs -->
+  <div class="glow-orb orb-gold-1"></div>
+  <div class="glow-orb orb-gold-2"></div>
 
-    <nav>
-      <ul class="nav-links" id="nav-links">
-        <li><a href="#hero" class="nav-link active">Home</a></li>
-        <li><a href="#experience" class="nav-link">Experience</a></li>
-        <li><a href="#projects" class="nav-link">Projects</a></li>
-        <li><a href="#skills" class="nav-link">Skills</a></li>
-        <li class="desktop-only-audio-item">
-          <button class="icon-btn audio-btn" id="audio-btn" title="Toggle Sound Engine">
-            <span class="audio-icon-box"><i data-lucide="volume-x" class="audio-icon"></i></span>
-            <span class="audio-btn-text">Audio Off</span>
-          </button>
-        </li>
-        <li><a href="#contact" class="btn-contact-pill">Contact</a></li>
-      </ul>
-    </nav>
+  <!-- Floating Screen Controls: Home / Reset View Button -->
+  <div class="screen-controls-layer">
+    <button id="btn-reset-view" class="btn-reset-view nav-btn" data-node="hero" title="Reset Camera to Default View">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-home"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Default View</span>
+    </button>
+  </div>
 
-    <!-- Mobile Header Actions (Standalone Audio Icon + Hamburger Toggle) -->
-    <div class="header-actions-mobile">
-      <button class="icon-btn audio-btn-standalone audio-btn-mobile" id="audio-btn-mobile" title="Toggle Sound Engine">
-        <span class="audio-icon-box"><i data-lucide="volume-x" class="audio-icon"></i></span>
-      </button>
 
-      <button class="mobile-menu-toggle" id="menu-toggle" aria-label="Toggle Navigation Menu">
-        <i data-lucide="menu" id="menu-icon"></i>
-      </button>
+
+  <!-- 3D EMBEDDED SPATIAL CONTENT OVERLAY CARDS -->
+  <div class="spatial-content-layer">
+    <!-- Hero / Intro Card -->
+    <div id="card-hero" class="spatial-card glass-card active">
+      <div class="gold-badge-pill">
+        <span class="pulse-dot"></span>
+        <span>Interactive 3D Workspace</span>
+      </div>
+      <h1 class="hero-title-gold">LIPIN <span class="gradient-gold">KUMAR</span></h1>
+      <p class="hero-role">UI/UX Designer &amp; Game Developer</p>
+      <p class="hero-description">
+        Orbit &amp; drag the 3D model freely! Click any 3D node — the Workstation Monitors, Library Bookshelf, Skills Tower, or Comms Terminal to focus the 3D camera and explore embedded content.
+      </p>
+      <div class="cta-group">
+        <button class="btn-gold-action nav-btn" data-node="monitors">
+          <i data-lucide="monitor"></i> Enter Workstation
+        </button>
+        <button class="btn-outline-gold nav-btn" data-node="phone">
+          <i data-lucide="mail"></i> Contact Me
+        </button>
+      </div>
     </div>
-  </header>
 
-  <!-- Main Content Scroll Container -->
-  <main>
-    <!-- HERO SECTION -->
-    <section id="hero" class="hero-section">
-      <div class="hero-content-left">
-        <p class="hero-subtitle">Portfolio &amp; Experience</p>
-        <h1 class="hero-title-gold">
-          LIPIN<br>
-          KUMAR
-        </h1>
-        <p class="hero-role">UI/UX Designer &amp; Game Developer</p>
-        <p class="hero-description">
-          To engineer new things and seek a better position in an organization as a developer. Game development and UI/UX design in a better technological organization develops career, skill, and achieves maximum impact.
-        </p>
-        <div class="cta-group">
-          <a href="#projects" class="btn-gold-action">
-            <i data-lucide="sparkles"></i> View Projects
-          </a>
-          <a href="#contact" class="btn-outline-gold">
-            Get In Touch
-          </a>
+    <!-- Workstation Projects Card -->
+    <div id="card-monitors" class="spatial-card glass-card hidden">
+      <div class="card-header-bar">
+        <div class="section-header-compact">
+          <p class="section-subtitle">3D Workstation Display</p>
+          <h2 class="section-title">Featured Projects</h2>
         </div>
-      </div>
-    </section>
-
-    <!-- EXPERIENCE SECTION -->
-    <section id="experience">
-      <div class="section-header">
-        <p class="section-subtitle">Career Journey</p>
-        <h2 class="section-title">Work Experience</h2>
-      </div>
-      <div class="timeline-single-col" id="experience-list">
-        <!-- Injected dynamically -->
-      </div>
-    </section>
-
-    <!-- PROJECTS SECTION -->
-    <section id="projects">
-      <div class="section-header">
-        <p class="section-subtitle">Portfolio</p>
-        <h2 class="section-title">Featured Projects</h2>
+        <button class="close-card-btn nav-btn" data-node="hero">&times;</button>
       </div>
       <div class="projects-grid" id="projects-grid">
         <!-- Injected dynamically -->
       </div>
-    </section>
+    </div>
 
-    <!-- SKILLS & LANGUAGES SECTION -->
-    <section id="skills">
-      <div class="section-header">
-        <p class="section-subtitle">Expertise</p>
-        <h2 class="section-title">Skills &amp; Languages</h2>
-      </div>
-      <div class="skills-container">
-        <div>
-          <h3 class="timeline-column-title" style="margin-bottom: 20px;">
-            <i data-lucide="cpu"></i> Design &amp; Game Dev Tools
-          </h3>
-          <div class="skills-cards-grid" id="skills-grid">
-            <!-- Injected dynamically -->
-          </div>
+    <!-- Library Experience Card -->
+    <div id="card-bookshelf" class="spatial-card glass-card hidden">
+      <div class="card-header-bar">
+        <div class="section-header-compact">
+          <p class="section-subtitle">3D Library &amp; Archives</p>
+          <h2 class="section-title">Work Experience</h2>
         </div>
+        <button class="close-card-btn nav-btn" data-node="hero">&times;</button>
+      </div>
+      <div class="timeline-grid" id="experience-list">
+        <!-- Injected dynamically -->
+      </div>
+    </div>
 
-        <div>
-          <h3 class="timeline-column-title" style="margin-bottom: 20px;">
-            <i data-lucide="languages"></i> Languages
-          </h3>
-          <div class="language-card">
-            <div class="language-list" id="language-list">
-              <!-- Injected dynamically -->
+    <!-- Technical Skills Matrix Card -->
+    <div id="card-skills" class="spatial-card glass-card hidden">
+      <div class="card-header-bar">
+        <div class="section-header-compact">
+          <p class="section-subtitle">Technical Matrix</p>
+          <h2 class="section-title">Skills &amp; Languages</h2>
+        </div>
+        <button class="close-card-btn nav-btn" data-node="hero">&times;</button>
+      </div>
+      <div class="skills-wrapper">
+        <div class="skills-column">
+          <h3 class="card-title-gold"><i data-lucide="cpu"></i> Design &amp; Game Tools</h3>
+          <div class="skills-grid" id="skills-grid"></div>
+        </div>
+        <div class="skills-column">
+          <h3 class="card-title-gold"><i data-lucide="languages"></i> Languages Spoken</h3>
+          <div class="languages-list" id="language-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comms Terminal Contact Card -->
+    <div id="card-phone" class="spatial-card glass-card hidden">
+      <div class="card-header-bar">
+        <div class="section-header-compact">
+          <p class="section-subtitle">Comms Terminal</p>
+          <h2 class="section-title">Contact Lipin Kumar</h2>
+        </div>
+        <button class="close-card-btn nav-btn" data-node="hero">&times;</button>
+      </div>
+      <div class="contact-grid">
+        <div class="contact-info">
+          <div class="info-item">
+            <div class="info-icon"><i data-lucide="mail"></i></div>
+            <div>
+              <span class="info-lbl">Email Address</span>
+              <a href="mailto:lipinkumarcs20@gmail.com" class="info-val">lipinkumarcs20@gmail.com</a>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon"><i data-lucide="phone"></i></div>
+            <div>
+              <span class="info-lbl">Phone</span>
+              <a href="tel:9747144795" class="info-val">9747144795</a>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon"><i data-lucide="globe"></i></div>
+            <div>
+              <span class="info-lbl">Official Website</span>
+              <a href="https://lipinkumarcs20.editorx.io/lipinkumar" target="_blank" rel="noopener" class="info-val">lipinkumarcs20.editorx.io</a>
             </div>
           </div>
         </div>
-      </div>
-    </section>
-
-    <!-- CONTACT SECTION -->
-    <section id="contact">
-      <div class="section-header">
-        <p class="section-subtitle">Connect</p>
-        <h2 class="section-title">Contact Lipin Kumar</h2>
-      </div>
-      <div class="contact-container">
-        <div class="contact-meta-bar" style="grid-template-columns: 1fr 1fr;">
-          <div class="contact-meta-item">
-            <i data-lucide="mail"></i> lipinkumarcs20@gmail.com
-          </div>
-          <div class="contact-meta-item">
-            <i data-lucide="phone"></i> 9747144795
-          </div>
-        </div>
-
-        <form id="contact-form">
+        <form id="contact-form" class="contact-form">
           <div class="form-group">
             <label class="form-label" for="contact-name">Your Name</label>
             <input type="text" id="contact-name" class="form-input" placeholder="e.g. Sarah Jenkins" required>
@@ -169,28 +177,23 @@
           </div>
           <div class="form-group">
             <label class="form-label" for="contact-message">Message</label>
-            <textarea id="contact-message" class="form-textarea" rows="5" placeholder="Let's build something extraordinary..." required></textarea>
+            <textarea id="contact-message" class="form-textarea" rows="3" placeholder="Let's build something extraordinary..." required></textarea>
           </div>
-          <button type="submit" class="btn-gold-action" style="width: 100%; justify-content: center;">
+          <button type="submit" class="btn-gold-action" style="width: 100%;">
             <i data-lucide="send"></i> Send Message
           </button>
         </form>
       </div>
-    </section>
-  </main>
+    </div>
+  </div>
 
   <!-- PROJECT PREVIEW MODAL -->
   <div class="modal-backdrop" id="project-modal">
-    <div class="modal-content">
+    <div class="modal-content glass-card">
       <button class="modal-close-btn" id="modal-close">&times;</button>
       <div id="modal-body"></div>
     </div>
   </div>
-
-  <!-- FOOTER -->
-  <footer>
-    <p>&copy; 2026 Lipin Kumar. All rights reserved. UI/UX Designer &amp; Game Developer.</p>
-  </footer>
 
   <script type="module" src="./src/main.js"></script>
 </body>
